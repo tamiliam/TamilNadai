@@ -1,0 +1,664 @@
+{
+  "version": "1.0",
+  "description": "TamilNadai error taxonomy — maps grammar rules to 12 macro categories",
+  "source": "Based on தமிழ் நடைக் கையேடு (TVA, bookid=169) and LanguageTool grammar.xml",
+
+  "categories": {
+    "sandhi_doubling": {
+      "id": 1,
+      "name_en": "Sandhi doubling (vallinam)",
+      "name_ta": "ஒற்று மிகுதல்",
+      "description": "Hard consonant (க,ச,த,ப) should be doubled at the start of the second word but is missing",
+      "book_rules": "54-69, 78-93",
+      "error_type": "missing_vallinam_doubling"
+    },
+    "sandhi_no_doubling": {
+      "id": 2,
+      "name_en": "No sandhi doubling",
+      "name_ta": "ஒற்று மிகாமை",
+      "description": "Hard consonant should NOT be doubled but incorrectly is",
+      "book_rules": "94-128",
+      "error_type": "unnecessary_vallinam_doubling"
+    },
+    "word_joining": {
+      "id": 3,
+      "name_en": "Word joining",
+      "name_ta": "சேர்த்து எழுதுதல்",
+      "description": "Words should be written together but are incorrectly separated",
+      "book_rules": "CAT1 join rules, CAT2 join rules, Ch 6",
+      "error_type": "incorrect_separation"
+    },
+    "word_separation": {
+      "id": 4,
+      "name_en": "Word separation",
+      "name_ta": "பிரித்து எழுதுதல்",
+      "description": "Words should be written separately but are incorrectly joined",
+      "book_rules": "CAT1 separate rules, CAT2 separate rules, Ch 6",
+      "error_type": "incorrect_joining"
+    },
+    "noun_postposition": {
+      "id": 5,
+      "name_en": "Noun + postposition",
+      "name_ta": "பெயர் + இடைச்சொல்",
+      "description": "Rules governing when noun + postposition should be joined or separated based on case markers",
+      "book_rules": "Ch 6 (6-03 and related)",
+      "error_type": "noun_postposition_spacing"
+    },
+    "verb_auxiliary": {
+      "id": 6,
+      "name_en": "Verb + auxiliary",
+      "name_ta": "வினை + துணைவினை",
+      "description": "Auxiliary verbs must be joined to the main verb",
+      "book_rules": "5-01, 5-02",
+      "error_type": "verb_auxiliary_separation"
+    },
+    "number_agreement": {
+      "id": 7,
+      "name_en": "Number agreement",
+      "name_ta": "எண் ஒப்புமை",
+      "description": "Quantifier-noun number agreement (e.g., ஒவ்வொரு + singular)",
+      "book_rules": "5-03, 5-04, 5-05",
+      "error_type": "number_agreement_error"
+    },
+    "article_usage": {
+      "id": 8,
+      "name_en": "Article usage (ஒரு/ஓர்)",
+      "name_ta": "ஒரு/ஓர் பயன்பாடு",
+      "description": "Use ஓர் before vowel-initial words, ஒரு before consonant-initial words",
+      "book_rules": "53",
+      "error_type": "article_form_error"
+    },
+    "case_marker_sandhi": {
+      "id": 9,
+      "name_en": "Case marker sandhi",
+      "name_ta": "வேற்றுமை உருபுப் புணர்ச்சி",
+      "description": "Consonant doubling after case markers (accusative ஐ, dative கு)",
+      "book_rules": "70-77",
+      "error_type": "case_marker_doubling"
+    },
+    "classical_sandhi": {
+      "id": 10,
+      "name_en": "Classical sandhi",
+      "name_ta": "மரபுப் புணர்ச்சி",
+      "description": "Morphophonemic sound changes in word formation (plurals, glides, etc.)",
+      "book_rules": "1-52",
+      "error_type": "classical_sandhi_error"
+    },
+    "specific_words": {
+      "id": 11,
+      "name_en": "Specific word conventions",
+      "name_ta": "தனிச்சொல் வழக்கு",
+      "description": "Context-dependent joining/separation for specific words (Ch 5-6 miscellaneous)",
+      "book_rules": "Ch 5-6 misc",
+      "error_type": "specific_word_convention"
+    },
+    "correct_sentence": {
+      "id": 12,
+      "name_en": "Correct sentence",
+      "name_ta": "பிழையற்ற வாக்கியம்",
+      "description": "Well-formed Tamil sentence with no error — used for false-positive testing",
+      "book_rules": null,
+      "error_type": null
+    }
+  },
+
+  "rule_mappings": {
+    "_comment": "Maps each grammar.xml rule_id to a taxonomy category and subcategory",
+
+    "noun_noun": {
+      "category": "sandhi_doubling",
+      "subcategory": "monosyllabic_noun",
+      "book_rules": [64],
+      "notes": "One-syllable noun + noun: vallinam doubles and words join"
+    },
+    "noun_suffix_1": {
+      "category": "noun_postposition",
+      "subcategory": "bare_noun_join",
+      "book_rules": [],
+      "notes": "Noun (no case marker) + postposition → join"
+    },
+    "noun_suffix_1A": {
+      "category": "noun_postposition",
+      "subcategory": "case_noun_separate",
+      "book_rules": [],
+      "notes": "Noun + இன் + கீழ் → separate"
+    },
+    "noun_suffix_1B": {
+      "category": "noun_postposition",
+      "subcategory": "case_noun_separate",
+      "book_rules": [],
+      "notes": "Noun + ஐ + குறித்த → separate"
+    },
+    "noun_suffix_1C": {
+      "category": "noun_postposition",
+      "subcategory": "case_noun_separate",
+      "book_rules": [],
+      "notes": "Noun + ஐ + குறித்து → separate"
+    },
+    "noun_suffix_1D": {
+      "category": "noun_postposition",
+      "subcategory": "case_noun_separate",
+      "book_rules": [],
+      "notes": "Noun + ஐ + பற்றி/பற்றிய → separate"
+    },
+    "noun_suffix_1E": {
+      "category": "noun_postposition",
+      "subcategory": "case_noun_separate",
+      "book_rules": [],
+      "notes": "Noun + இன் + பேரில் → separate"
+    },
+    "noun_suffix_1F": {
+      "category": "noun_postposition",
+      "subcategory": "case_noun_separate",
+      "book_rules": [],
+      "notes": "Noun + ஐ + போல/போல் → separate"
+    },
+    "noun_suffix_2": {
+      "category": "word_joining",
+      "subcategory": "noun_suffix",
+      "book_rules": [],
+      "notes": "Noun + தோறும் → join"
+    },
+    "vinai_vinai": {
+      "category": "verb_auxiliary",
+      "subcategory": "main_auxiliary",
+      "book_rules": [501, 502],
+      "notes": "Main verb + auxiliary verb → join"
+    },
+    "vinaiyeccham_vinai": {
+      "category": "verb_auxiliary",
+      "subcategory": "causative",
+      "book_rules": [501],
+      "notes": "Verbal participle + causative verb → join"
+    },
+
+    "aie_noun": {
+      "category": "word_joining",
+      "subcategory": "demonstrative_prefix",
+      "book_rules": [54],
+      "notes": "Demonstrative prefix அ/இ/எ + noun → join"
+    },
+    "aakaadhu": {
+      "category": "word_joining",
+      "subcategory": "verbal_suffix",
+      "book_rules": [],
+      "notes": "Verbal noun + ஆகாது → join"
+    },
+    "idayil": {
+      "category": "word_joining",
+      "subcategory": "noun_suffix",
+      "book_rules": [],
+      "notes": "Noun + இடையில்/இடையே → join"
+    },
+    "irunthu": {
+      "category": "word_joining",
+      "subcategory": "noun_suffix",
+      "book_rules": [],
+      "notes": "Place word + இருந்து → join"
+    },
+    "illaamal": {
+      "category": "word_joining",
+      "subcategory": "verbal_suffix",
+      "book_rules": [],
+      "notes": "மட்டும் + இல்லாமல் → join"
+    },
+    "illaamal2": {
+      "category": "word_separation",
+      "subcategory": "verbal_suffix",
+      "book_rules": [],
+      "notes": "Noun + இல்லாமல் → separate"
+    },
+    "illai": {
+      "category": "word_joining",
+      "subcategory": "verbal_suffix",
+      "book_rules": [],
+      "notes": "Verbal noun + இல்லை → join"
+    },
+    "illai2": {
+      "category": "word_joining",
+      "subcategory": "verbal_suffix",
+      "book_rules": [],
+      "notes": "Verbal participle + இல்லை → join"
+    },
+    "indRi": {
+      "category": "word_joining",
+      "subcategory": "noun_suffix",
+      "book_rules": [],
+      "notes": "Noun + இன்றி → join"
+    },
+    "udan": {
+      "category": "word_joining",
+      "subcategory": "verbal_suffix",
+      "book_rules": [],
+      "notes": "Relative participle + உடன் → join"
+    },
+    "uNdu": {
+      "category": "word_joining",
+      "subcategory": "verbal_suffix",
+      "book_rules": [],
+      "notes": "Verbal noun + உண்டு → join"
+    },
+    "uNdu2": {
+      "category": "word_separation",
+      "subcategory": "noun_suffix",
+      "book_rules": [],
+      "notes": "Noun + உண்டு → separate"
+    },
+    "uriya": {
+      "category": "word_joining",
+      "subcategory": "case_noun_suffix",
+      "book_rules": [],
+      "notes": "Noun + கு உருபு + உரிய → join"
+    },
+    "uLLa": {
+      "category": "word_joining",
+      "subcategory": "noun_suffix",
+      "book_rules": [],
+      "notes": "Noun + உள்ள → join"
+    },
+    "uudaaga": {
+      "category": "word_joining",
+      "subcategory": "noun_suffix",
+      "book_rules": [],
+      "notes": "Noun + இன் + ஊடே/ஊடாக → join"
+    },
+    "enRu": {
+      "category": "word_joining",
+      "subcategory": "quotative",
+      "book_rules": [],
+      "notes": "Word + என்று → join"
+    },
+    "ena": {
+      "category": "word_joining",
+      "subcategory": "quotative",
+      "book_rules": [],
+      "notes": "Word + என → join"
+    },
+    "ERRa": {
+      "category": "word_separation",
+      "subcategory": "case_noun_suffix",
+      "book_rules": [],
+      "notes": "Noun + கு உருபு + ஏற்ற → separate"
+    },
+    "YEn": {
+      "category": "word_joining",
+      "subcategory": "interrogative",
+      "book_rules": [],
+      "notes": "Word + ஏன் → join"
+    },
+    "oru": {
+      "category": "word_joining",
+      "subcategory": "determiner",
+      "book_rules": [],
+      "notes": "Noun/word + ஒரு → join"
+    },
+    "ozhiya": {
+      "category": "word_joining",
+      "subcategory": "verbal_suffix",
+      "book_rules": [],
+      "notes": "Verbal participle + ஆல் + ஒழிய → join"
+    },
+    "kaattilum": {
+      "category": "word_separation",
+      "subcategory": "comparison",
+      "book_rules": [],
+      "notes": "Word + காட்டிலும் → separate"
+    },
+    "kuudaadhu": {
+      "category": "word_separation",
+      "subcategory": "verbal_suffix",
+      "book_rules": [],
+      "notes": "Word + கூடாது → separate"
+    },
+    "kuudiya": {
+      "category": "word_joining",
+      "subcategory": "verbal_suffix",
+      "book_rules": [],
+      "notes": "Verbal participle + கூடிய → join"
+    },
+    "kuudum": {
+      "category": "word_joining",
+      "subcategory": "verbal_suffix",
+      "book_rules": [],
+      "notes": "Verbal participle + கூடும் → join"
+    },
+    "thakka": {
+      "category": "word_separation",
+      "subcategory": "verbal_suffix",
+      "book_rules": [],
+      "notes": "Verbal participle + தக்க → separate"
+    },
+    "thagaadha": {
+      "category": "word_separation",
+      "subcategory": "verbal_suffix",
+      "book_rules": [],
+      "notes": "Verbal participle + தகாத → separate"
+    },
+    "thaguntha": {
+      "category": "word_separation",
+      "subcategory": "verbal_suffix",
+      "book_rules": [],
+      "notes": "Verbal participle + தகுந்த → separate"
+    },
+    "paarkilum": {
+      "category": "word_separation",
+      "subcategory": "comparison",
+      "book_rules": [],
+      "notes": "Word + பார்க்கிலும் → separate"
+    },
+    "piRagu": {
+      "category": "word_joining",
+      "subcategory": "temporal",
+      "book_rules": [],
+      "notes": "Relative participle + பிறகு → join"
+    },
+    "piRagu2": {
+      "category": "word_separation",
+      "subcategory": "temporal",
+      "book_rules": [],
+      "notes": "Noun + கு உருபு + பிறகு → separate"
+    },
+    "pin": {
+      "category": "word_joining",
+      "subcategory": "temporal",
+      "book_rules": [],
+      "notes": "Relative participle + பின் → join"
+    },
+    "pin2": {
+      "category": "word_separation",
+      "subcategory": "temporal",
+      "book_rules": [],
+      "notes": "Noun + உருபு + பின் → separate"
+    },
+    "puthithil": {
+      "category": "word_separation",
+      "subcategory": "temporal",
+      "book_rules": [],
+      "notes": "Relative participle + புதிதில் → separate"
+    },
+    "poorvamaaka": {
+      "category": "word_joining",
+      "subcategory": "noun_suffix",
+      "book_rules": [],
+      "notes": "Noun + பூர்வமாக → join"
+    },
+    "pothilum": {
+      "category": "word_joining",
+      "subcategory": "concessive",
+      "book_rules": [],
+      "notes": "Relative participle + போதிலும் → join"
+    },
+    "pothu": {
+      "category": "word_joining",
+      "subcategory": "temporal",
+      "book_rules": [],
+      "notes": "Relative participle/noun + போது/பொழுது → join"
+    },
+    "polum": {
+      "category": "word_joining",
+      "subcategory": "inclusive",
+      "book_rules": [],
+      "notes": "Word + போலும் → join"
+    },
+    "pondRa": {
+      "category": "word_separation",
+      "subcategory": "comparison",
+      "book_rules": [],
+      "notes": "Word + போன்ற → separate"
+    },
+    "pondRu": {
+      "category": "word_separation",
+      "subcategory": "comparison",
+      "book_rules": [],
+      "notes": "Word + போன்று → separate"
+    },
+    "mattil": {
+      "category": "word_joining",
+      "subcategory": "noun_suffix",
+      "book_rules": [],
+      "notes": "Relative participle + மட்டில் → join"
+    },
+    "mattum": {
+      "category": "word_joining",
+      "subcategory": "limitative",
+      "book_rules": [],
+      "notes": "Relative participle + மட்டும் → join"
+    },
+    "mayam": {
+      "category": "word_joining",
+      "subcategory": "noun_suffix",
+      "book_rules": [],
+      "notes": "Noun + மயம் → join"
+    },
+    "maattu": {
+      "category": "word_joining",
+      "subcategory": "verbal_suffix",
+      "book_rules": [],
+      "notes": "Verbal participle + மாட்டு → join"
+    },
+    "maathiraththil": {
+      "category": "word_separation",
+      "subcategory": "verbal_suffix",
+      "book_rules": [],
+      "notes": "Verbal participle + மாத்திரத்தில் → separate"
+    },
+    "mugamaaga": {
+      "category": "word_joining",
+      "subcategory": "noun_suffix",
+      "book_rules": [],
+      "notes": "Relative participle + முகமாக → join"
+    },
+    "mudiyum": {
+      "category": "word_separation",
+      "subcategory": "verbal_suffix",
+      "book_rules": [],
+      "notes": "Verbal participle + முடியும்/முடியாது → separate"
+    },
+    "mun2": {
+      "category": "word_separation",
+      "subcategory": "temporal",
+      "book_rules": [],
+      "notes": "Noun + உருபு + முன் → separate"
+    },
+    "vannam": {
+      "category": "word_joining",
+      "subcategory": "verbal_suffix",
+      "book_rules": [],
+      "notes": "Relative participle + வண்ணம் → join"
+    },
+    "varai": {
+      "category": "word_joining",
+      "subcategory": "limitative",
+      "book_rules": [],
+      "notes": "Relative participle + வரை → join"
+    },
+    "valadhu": {
+      "category": "word_separation",
+      "subcategory": "directional",
+      "book_rules": [],
+      "notes": "இடது/வலது + word → separate"
+    },
+    "vazhiyaaka": {
+      "category": "word_separation",
+      "subcategory": "noun_suffix",
+      "book_rules": [],
+      "notes": "Noun + வழியாக → separate"
+    },
+    "vaakkil": {
+      "category": "word_joining",
+      "subcategory": "noun_suffix",
+      "book_rules": [],
+      "notes": "Word + வாக்கில் → join"
+    },
+    "vida": {
+      "category": "word_joining",
+      "subcategory": "comparison",
+      "book_rules": [],
+      "notes": "Word + விட → join"
+    },
+    "vegu": {
+      "category": "word_joining",
+      "subcategory": "intensifier",
+      "book_rules": [],
+      "notes": "வெகு + word → join"
+    },
+    "vENdum": {
+      "category": "word_separation",
+      "subcategory": "verbal_suffix",
+      "book_rules": [],
+      "notes": "Verbal participle + வேண்டும்/வேண்டாம் → separate"
+    },
+    "vERu": {
+      "category": "word_joining",
+      "subcategory": "determiner",
+      "book_rules": [],
+      "notes": "வேறு + ஒரு/ஒருவர்/பல/சில → join"
+    },
+
+    "Ends_in_A_1": {
+      "category": "sandhi_doubling",
+      "subcategory": "demonstrative_word",
+      "book_rules": [55],
+      "notes": "அந்த/இந்த/எந்த + vallinam → double"
+    },
+    "Ends_in_A_2": {
+      "category": "sandhi_doubling",
+      "subcategory": "verbal_participle_a",
+      "book_rules": [67],
+      "notes": "Verbal participle ending in அ + vallinam → double"
+    },
+    "Ends_in_A_3": {
+      "category": "sandhi_doubling",
+      "subcategory": "adverb_postposition",
+      "book_rules": [61, 92],
+      "notes": "Adverbs/postpositions ending in அ (சரிவர, கூட, மிக, போல, என, ஏற்ப)"
+    },
+    "Ends_in_A_4": {
+      "category": "sandhi_doubling",
+      "subcategory": "aaka_suffix",
+      "book_rules": [78],
+      "notes": "Words ending in ஆக + vallinam → double"
+    },
+    "Ends_in_A_5": {
+      "category": "sandhi_doubling",
+      "subcategory": "adjective_prefix",
+      "book_rules": [91],
+      "notes": "சின்ன + vallinam → double"
+    },
+    "Ends_in_Aa_1": {
+      "category": "sandhi_doubling",
+      "subcategory": "negative_participle",
+      "book_rules": [65],
+      "notes": "Defective negative relative participle + vallinam → double"
+    },
+    "Ends_in_I_1": {
+      "category": "sandhi_doubling",
+      "subcategory": "postposition_i",
+      "book_rules": [68],
+      "notes": "பற்றி + vallinam → double"
+    },
+    "Ends_in_I_2": {
+      "category": "sandhi_doubling",
+      "subcategory": "postposition_i",
+      "book_rules": [68],
+      "notes": "மாதிரி + vallinam → double"
+    },
+    "Ends_in_IU_1": {
+      "category": "sandhi_doubling",
+      "subcategory": "verbal_participle_iu",
+      "book_rules": [66, 68],
+      "notes": "Verbal participles ending in இ/உ + vallinam → double"
+    },
+    "Ends_in_U": {
+      "category": "sandhi_doubling",
+      "subcategory": "noun_u_ending",
+      "book_rules": [66],
+      "notes": "Nouns ending in உ + vallinam → double"
+    },
+    "angu_ingu_engu": {
+      "category": "sandhi_doubling",
+      "subcategory": "locative",
+      "book_rules": [56],
+      "notes": "அங்கு/இங்கு/எங்கு + vallinam → may double"
+    },
+    "Ends_in_Ai_1": {
+      "category": "case_marker_sandhi",
+      "subcategory": "accusative_singular",
+      "book_rules": [70],
+      "notes": "Accusative ஐ (singular) + vallinam → double"
+    },
+    "Ends_in_Ai_2": {
+      "category": "case_marker_sandhi",
+      "subcategory": "accusative_plural",
+      "book_rules": [70],
+      "notes": "Accusative ஐ (plural) + vallinam → double"
+    },
+    "Ends_in_Ku_1": {
+      "category": "case_marker_sandhi",
+      "subcategory": "dative_singular",
+      "book_rules": [71],
+      "notes": "Dative கு (singular) + vallinam → double"
+    },
+    "Ends_in_Ku_2": {
+      "category": "case_marker_sandhi",
+      "subcategory": "dative_plural",
+      "book_rules": [71],
+      "notes": "Dative கு (plural) + vallinam → double"
+    }
+  },
+
+  "book_rule_mappings": {
+    "_comment": "Maps book rules not yet in grammar.xml to taxonomy categories (for Tier 2)",
+
+    "1-52": {"category": "classical_sandhi", "notes": "Morphophonemic rules — plural formation, glide insertion, etc."},
+    "53": {"category": "article_usage", "notes": "ஒரு before consonant, ஓர் before vowel"},
+    "54": {"category": "sandhi_doubling", "subcategory": "demonstrative_prefix", "notes": "Already in grammar.xml as aie_noun"},
+    "55": {"category": "sandhi_doubling", "subcategory": "demonstrative_word", "notes": "Already in grammar.xml as Ends_in_A_1"},
+    "56": {"category": "sandhi_doubling", "subcategory": "locative", "notes": "Already in grammar.xml as angu_ingu_engu"},
+    "57": {"category": "sandhi_doubling", "subcategory": "demonstrative_adverb", "notes": "NOT IMPLEMENTED: அப்படி/இப்படி/எப்படி"},
+    "58": {"category": "sandhi_doubling", "subcategory": "demonstrative_type", "notes": "NOT IMPLEMENTED: அவ்வகை/இவ்வகை/எவ்வகை"},
+    "59": {"category": "sandhi_doubling", "subcategory": "adverb", "notes": "NOT IMPLEMENTED: இனி/தனி"},
+    "60": {"category": "sandhi_doubling", "subcategory": "conjunction", "notes": "NOT IMPLEMENTED: அன்றி/இன்றி"},
+    "61": {"category": "sandhi_doubling", "subcategory": "adverb_postposition", "notes": "PARTIAL in Ends_in_A_3; நடு/பொது not added"},
+    "62": {"category": "sandhi_doubling", "subcategory": "adjective_prefix", "notes": "NOT IMPLEMENTED: முழு/திரு/புது/அரை/பாதி"},
+    "63": {"category": "sandhi_doubling", "subcategory": "numeral", "notes": "NOT IMPLEMENTED: எட்டு/பத்து"},
+    "64": {"category": "sandhi_doubling", "subcategory": "monosyllabic_noun", "notes": "Already in grammar.xml as noun_noun"},
+    "65": {"category": "sandhi_doubling", "subcategory": "negative_participle", "notes": "Already in grammar.xml as Ends_in_Aa_1"},
+    "66": {"category": "sandhi_doubling", "subcategory": "hard_cluster_ukara", "notes": "Already in grammar.xml as Ends_in_IU_1 + Ends_in_U"},
+    "67": {"category": "sandhi_doubling", "subcategory": "verbal_participle_a", "notes": "Already in grammar.xml as Ends_in_A_2"},
+    "68": {"category": "sandhi_doubling", "subcategory": "verbal_participle_iu", "notes": "Already in grammar.xml as Ends_in_IU_1"},
+    "69": {"category": "sandhi_doubling", "subcategory": "verb_form", "notes": "NOT IMPLEMENTED: ஆய்/போய்"},
+    "70": {"category": "case_marker_sandhi", "subcategory": "accusative", "notes": "Already in grammar.xml as Ends_in_Ai_1/2"},
+    "71": {"category": "case_marker_sandhi", "subcategory": "dative", "notes": "Already in grammar.xml as Ends_in_Ku_1/2"},
+    "72-77": {"category": "case_marker_sandhi", "subcategory": "other_cases", "notes": "NOT IMPLEMENTED: requires morphological analysis"},
+    "78": {"category": "sandhi_doubling", "subcategory": "aaka_suffix", "notes": "Already in grammar.xml as Ends_in_A_4"},
+    "79": {"category": "sandhi_doubling", "subcategory": "consonant_ending", "notes": "NOT IMPLEMENTED: ய்/ர்/ழ் endings"},
+    "80": {"category": "sandhi_doubling", "subcategory": "direction_words", "notes": "NOT IMPLEMENTED: கிழக்கு/மேற்கு/தெற்கு/வடக்கு"},
+    "81-82": {"category": "sandhi_doubling", "subcategory": "kutriyalukara", "notes": "NOT IMPLEMENTED"},
+    "83": {"category": "sandhi_doubling", "subcategory": "compound_noun", "notes": "NOT IMPLEMENTED: தொகைநிலை"},
+    "84": {"category": "sandhi_doubling", "subcategory": "expressive_word", "notes": "NOT IMPLEMENTED: உரிச்சொற்கள்"},
+    "85": {"category": "sandhi_doubling", "subcategory": "onomatopoeia", "notes": "NOT IMPLEMENTED"},
+    "86": {"category": "sandhi_doubling", "subcategory": "metaphor", "notes": "NOT IMPLEMENTABLE: semantic"},
+    "87": {"category": "sandhi_doubling", "subcategory": "specific_adverb", "notes": "NOT IMPLEMENTED: மெல்ல/உரக்க/நிறம்ப/நிறைய"},
+    "88": {"category": "sandhi_doubling", "subcategory": "quantifier", "notes": "NOT IMPLEMENTED: எல்லா/அனைத்து"},
+    "89": {"category": "sandhi_doubling", "subcategory": "doubling_ukara", "notes": "NOT IMPLEMENTED"},
+    "90": {"category": "sandhi_doubling", "subcategory": "full_ukara", "notes": "NOT IMPLEMENTED"},
+    "91": {"category": "sandhi_doubling", "subcategory": "adjective_prefix", "notes": "Already in grammar.xml as Ends_in_A_5"},
+    "92": {"category": "sandhi_doubling", "subcategory": "comparison_word", "notes": "Already in Ends_in_A_3 (விட/கூட)"},
+    "93": {"category": "sandhi_doubling", "subcategory": "positional_word", "notes": "NOT IMPLEMENTED: கீழ்/இடை"},
+    "94-128": {"category": "sandhi_no_doubling", "notes": "35 rules for when NOT to double"},
+    "5-01": {"category": "verb_auxiliary", "notes": "Already in grammar.xml as vinai_vinai"},
+    "5-02": {"category": "verb_auxiliary", "notes": "Already in grammar.xml as vinai_vinai + CAT2 rules"},
+    "5-03": {"category": "number_agreement", "subcategory": "ovvoru_singular", "notes": "NOT IMPLEMENTED: ஒவ்வொரு + singular"},
+    "5-04": {"category": "number_agreement", "subcategory": "ellaa_plural", "notes": "NOT IMPLEMENTED: எல்லா + plural"},
+    "5-05": {"category": "number_agreement", "subcategory": "entha_singular", "notes": "NOT IMPLEMENTED: எந்த + singular"},
+    "5-06": {"category": "specific_words", "notes": "NOT IMPLEMENTABLE: spacing changes meaning"},
+    "5-07": {"category": "article_usage", "notes": "NOT IMPLEMENTED: don't use ஒரு/ஓர் as article"},
+    "6-01_to_6-12": {"category": "specific_words", "notes": "NOT IMPLEMENTABLE: general principles"},
+    "6-13_to_6-18": {"category": "specific_words", "notes": "PARTIALLY implementable: context-dependent words"},
+    "6-19": {"category": "word_separation", "subcategory": "conjunction", "notes": "NOT IMPLEMENTED: அல்லது always separate"},
+    "6-20": {"category": "word_separation", "subcategory": "conjunction", "notes": "PARTIALLY implementable: ஆனால் separate as conjunction"},
+    "6-21_to_6-22": {"category": "specific_words", "notes": "NOT IMPLEMENTABLE: semantic"},
+    "6-23_to_6-39": {"category": "specific_words", "notes": "Punctuation rules — different scope"}
+  }
+}
