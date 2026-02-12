@@ -1,0 +1,107 @@
+{% extends "base.html" %}
+{% block title %}Exports{% endblock %}
+{% block content %}
+
+<div class="flex items-center gap-3 mb-6">
+    <h1 class="text-2xl font-bold text-etch">Exports</h1>
+    <div class="h-px flex-1 bg-grain-light"></div>
+</div>
+
+<!-- Dataset Export Card -->
+<div class="leaf-card p-6 mb-8">
+    <h2 class="text-lg font-semibold text-etch mb-2">Full Dataset</h2>
+    <p class="text-sm text-etch-light mb-4">
+        Download all <strong>{{ rule_count }}</strong> rules and <strong>{{ sentence_count }}</strong> sentences
+        ({{ accepted_count }} accepted) as a structured file.
+        Suitable for research, analysis, or uploading to HuggingFace.
+    </p>
+    <div class="flex gap-3">
+        <a href="{% url 'export_dataset' fmt='csv' %}"
+           class="inline-flex items-center gap-2 bg-stylus text-leaf-50 px-4 py-2 rounded-lg text-sm font-medium hover:bg-stylus-dark transition-colors">
+            <span class="material-symbols-outlined" style="font-size:18px">download</span>
+            Download CSV
+        </a>
+        <a href="{% url 'export_dataset' fmt='json' %}"
+           class="inline-flex items-center gap-2 border border-stylus text-stylus px-4 py-2 rounded-lg text-sm font-medium hover:bg-stylus/10 transition-colors">
+            <span class="material-symbols-outlined" style="font-size:18px">download</span>
+            Download JSON
+        </a>
+    </div>
+    <p class="text-xs text-etch-lighter mt-3">
+        CSV is flat (one row per sentence) — opens in Excel. JSON is hierarchical (sentences nested under rules) — ideal for scripts and analysis tools.
+    </p>
+</div>
+
+<!-- Evaluation Runs Export Card -->
+<div class="leaf-card p-6">
+    <h2 class="text-lg font-semibold text-etch mb-2">Evaluation Results</h2>
+    <p class="text-sm text-etch-light mb-4">
+        Download per-run evaluation results, including each sentence's model response and outcome classification.
+    </p>
+
+    {% if eval_runs %}
+    <div class="overflow-x-auto">
+        <table class="w-full text-sm">
+            <thead>
+                <tr class="text-left text-etch-lighter border-b border-grain">
+                    <th class="pb-2 pr-4">Date</th>
+                    <th class="pb-2 pr-4">Model</th>
+                    <th class="pb-2 pr-4">Category</th>
+                    <th class="pb-2 pr-4 text-right">Sentences</th>
+                    <th class="pb-2 pr-4 text-right">Detection</th>
+                    <th class="pb-2 pr-4 text-right">Accuracy</th>
+                    <th class="pb-2 text-center">Download</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for run in eval_runs %}
+                <tr class="border-b border-grain-light">
+                    <td class="py-2.5 pr-4 text-etch-lighter">{{ run.created_at|date:"d M Y H:i" }}</td>
+                    <td class="py-2.5 pr-4 text-etch font-medium">{{ run.get_model_name_display }}</td>
+                    <td class="py-2.5 pr-4 text-etch-light">
+                        {% if run.category_filter %}
+                            <span class="tamil text-xs">{{ run.category_filter }}</span>
+                        {% else %}
+                            All
+                        {% endif %}
+                    </td>
+                    <td class="py-2.5 pr-4 text-right text-etch">{{ run.total_sentences }}</td>
+                    <td class="py-2.5 pr-4 text-right">
+                        {% if run.detection_rate is not None %}
+                        <span class="{% if run.detection_rate >= 70 %}text-palmgreen{% elif run.detection_rate >= 40 %}text-stylus-dark{% else %}text-terracotta{% endif %} font-medium">
+                            {{ run.detection_rate }}%
+                        </span>
+                        {% else %}&mdash;{% endif %}
+                    </td>
+                    <td class="py-2.5 pr-4 text-right">
+                        {% if run.correction_accuracy is not None %}
+                        <span class="{% if run.correction_accuracy >= 50 %}text-palmgreen{% elif run.correction_accuracy >= 25 %}text-stylus-dark{% else %}text-terracotta{% endif %} font-medium">
+                            {{ run.correction_accuracy }}%
+                        </span>
+                        {% else %}&mdash;{% endif %}
+                    </td>
+                    <td class="py-2.5 text-center">
+                        <div class="flex items-center justify-center gap-2">
+                            <a href="{% url 'export_eval_run' run_id=run.id fmt='csv' %}"
+                               class="text-stylus hover:text-stylus-dark transition-colors" title="Download CSV">
+                                <span class="material-symbols-outlined" style="font-size:18px">download</span>
+                                <span class="text-xs">CSV</span>
+                            </a>
+                            <a href="{% url 'export_eval_run' run_id=run.id fmt='json' %}"
+                               class="text-stylus hover:text-stylus-dark transition-colors" title="Download JSON">
+                                <span class="material-symbols-outlined" style="font-size:18px">download</span>
+                                <span class="text-xs">JSON</span>
+                            </a>
+                        </div>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% else %}
+    <p class="text-etch-lighter text-sm">No evaluation runs yet.</p>
+    {% endif %}
+</div>
+
+{% endblock %}

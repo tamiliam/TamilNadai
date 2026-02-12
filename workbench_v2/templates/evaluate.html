@@ -1,0 +1,157 @@
+{% extends "base.html" %}
+{% block title %}Evaluate LLMs{% endblock %}
+{% block content %}
+
+<div class="flex items-center gap-3 mb-6">
+    <h1 class="text-2xl font-bold text-etch">Evaluate LLMs</h1>
+    <div class="h-px flex-1 bg-grain-light"></div>
+</div>
+
+<!-- Run Configuration -->
+<div class="leaf-card p-6 mb-8">
+    <h2 class="text-lg font-semibold text-etch mb-4">New Evaluation Run</h2>
+    <p class="text-sm text-etch-light mb-4">
+        Test how well an LLM handles Tamil writing conventions. Each sentence is sent to the model with a prompt asking it to correct any errors. Results are scored against the gold standard.
+    </p>
+
+    <form method="post" action="{% url 'run_evaluation' %}" id="eval-form">
+        {% csrf_token %}
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+            <!-- Model -->
+            <div>
+                <label class="block text-sm font-medium text-etch mb-1">Model</label>
+                <select name="model_name" required
+                    class="w-full border border-grain rounded-lg px-3 py-2 text-sm bg-leaf-50 text-etch focus:ring-1 focus:ring-stylus">
+                    {% for m in models_list %}
+                    <option value="{{ m.id }}" {% if not m.available %}disabled{% endif %}>
+                        {{ m.name }}{% if not m.available %} (no API key){% endif %}
+                    </option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <!-- Category -->
+            <div>
+                <label class="block text-sm font-medium text-etch mb-1">Category</label>
+                <select name="category_filter"
+                    class="w-full border border-grain rounded-lg px-3 py-2 text-sm bg-leaf-50 text-etch focus:ring-1 focus:ring-stylus">
+                    <option value="">All Categories</option>
+                    <option value="இலக்கண அமைப்பில் சொற்கள்">Grammar Structure</option>
+                    <option value="தனிச் சொற்களை எழுதும் முறை">Individual Words</option>
+                    <option value="சந்தி">Sandhi</option>
+                </select>
+            </div>
+
+            <!-- Sentence Status -->
+            <div>
+                <label class="block text-sm font-medium text-etch mb-1">Sentences</label>
+                <select name="status_filter"
+                    class="w-full border border-grain rounded-lg px-3 py-2 text-sm bg-leaf-50 text-etch focus:ring-1 focus:ring-stylus">
+                    <option value="all">All Sentences</option>
+                    <option value="accepted">Accepted Only</option>
+                </select>
+            </div>
+        </div>
+
+        <button type="submit" id="run-btn"
+            class="inline-flex items-center gap-2 bg-stylus text-leaf-50 px-5 py-2.5 rounded-lg text-sm font-medium hover:bg-stylus-dark transition-colors">
+            <span class="material-symbols-outlined" style="font-size:18px">play_arrow</span>
+            Run Evaluation
+        </button>
+        <span id="run-spinner" class="hidden ml-3 text-sm text-etch-lighter">
+            <span class="material-symbols-outlined animate-spin" style="font-size:16px">progress_activity</span>
+            Running evaluation... this may take a minute.
+        </span>
+    </form>
+
+    <script>
+    document.getElementById('eval-form').addEventListener('submit', function() {
+        document.getElementById('run-btn').disabled = true;
+        document.getElementById('run-btn').classList.add('opacity-50');
+        document.getElementById('run-spinner').classList.remove('hidden');
+    });
+    </script>
+</div>
+
+<!-- Previous Runs -->
+<div class="leaf-card p-6">
+    <h2 class="text-lg font-semibold text-etch mb-4">Previous Runs</h2>
+
+    {% if runs %}
+    <div class="overflow-x-auto">
+        <table class="w-full text-sm">
+            <thead>
+                <tr class="text-left text-etch-lighter border-b border-grain">
+                    <th class="pb-2 pr-4">Date</th>
+                    <th class="pb-2 pr-4">Model</th>
+                    <th class="pb-2 pr-4">Category</th>
+                    <th class="pb-2 pr-4 text-right">Sentences</th>
+                    <th class="pb-2 pr-4 text-right">Detection</th>
+                    <th class="pb-2 pr-4 text-right">Accuracy</th>
+                    <th class="pb-2 text-right">Preservation</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for run in runs %}
+                <tr class="border-b border-grain-light hover:bg-leaf-200/50 {% if run.is_complete %}cursor-pointer{% endif %}"
+                    {% if run.is_complete %}onclick="window.location='{% url 'eval_detail' run.id %}'"{% endif %}>
+                    <td class="py-2.5 pr-4 text-etch-lighter">{{ run.created_at|date:"d M Y H:i" }}</td>
+                    <td class="py-2.5 pr-4 text-etch font-medium">{{ run.get_model_name_display }}</td>
+                    <td class="py-2.5 pr-4 text-etch-light">
+                        {% if run.category_filter %}
+                            <span class="tamil text-xs">{{ run.category_filter }}</span>
+                        {% else %}
+                            All
+                        {% endif %}
+                    </td>
+                    <td class="py-2.5 pr-4 text-right text-etch">{{ run.total_sentences }}</td>
+                    {% if run.is_running %}
+                    <td colspan="3" class="py-2.5 text-center text-stylus-dark font-medium">
+                        <span class="material-symbols-outlined animate-spin align-middle" style="font-size:16px">progress_activity</span>
+                        Running...
+                    </td>
+                    {% elif run.is_failed %}
+                    <td colspan="3" class="py-2.5 text-center text-terracotta font-medium">
+                        Failed
+                    </td>
+                    {% else %}
+                    <td class="py-2.5 pr-4 text-right">
+                        {% if run.detection_rate is not None %}
+                        <span class="{% if run.detection_rate >= 70 %}text-palmgreen{% elif run.detection_rate >= 40 %}text-stylus-dark{% else %}text-terracotta{% endif %} font-medium">
+                            {{ run.detection_rate }}%
+                        </span>
+                        {% else %}—{% endif %}
+                    </td>
+                    <td class="py-2.5 pr-4 text-right">
+                        {% if run.correction_accuracy is not None %}
+                        <span class="{% if run.correction_accuracy >= 50 %}text-palmgreen{% elif run.correction_accuracy >= 25 %}text-stylus-dark{% else %}text-terracotta{% endif %} font-medium">
+                            {{ run.correction_accuracy }}%
+                        </span>
+                        {% else %}—{% endif %}
+                    </td>
+                    <td class="py-2.5 text-right">
+                        {% if run.preservation_rate is not None %}
+                        <span class="{% if run.preservation_rate >= 90 %}text-palmgreen{% elif run.preservation_rate >= 70 %}text-stylus-dark{% else %}text-terracotta{% endif %} font-medium">
+                            {{ run.preservation_rate }}%
+                        </span>
+                        {% else %}—{% endif %}
+                    </td>
+                    {% endif %}
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% else %}
+    <p class="text-etch-lighter text-sm">No evaluation runs yet. Run your first evaluation above.</p>
+    {% endif %}
+</div>
+
+{% if has_running %}
+<script>
+// Auto-refresh while an evaluation is running
+setTimeout(function() { window.location.reload(); }, 10000);
+</script>
+{% endif %}
+
+{% endblock %}

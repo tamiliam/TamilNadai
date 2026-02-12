@@ -1,0 +1,78 @@
+{% extends "base.html" %}
+{% block title %}Privacy Policy{% endblock %}
+{% block content %}
+
+<div class="max-w-3xl mx-auto">
+    <h1 class="text-3xl font-bold text-etch mb-2">Privacy Policy</h1>
+    <p class="text-sm text-etch-lighter mb-8">Last updated: February 2026</p>
+
+    <div class="leaf-card p-6 space-y-6">
+        <div>
+            <h2 class="text-lg font-semibold text-etch mb-2">Who We Are</h2>
+            <p class="text-sm text-etch-light leading-relaxed">
+                Tamil Nadai is an open-source academic collaboration platform for Tamil writing standards. This platform is operated as a Free Software project under the GNU GPL licence. Contact: <a href="mailto:tamiliam@gmail.com" class="text-stylus hover:text-stylus-dark underline">tamiliam@gmail.com</a>.
+            </p>
+        </div>
+
+        <div>
+            <h2 class="text-lg font-semibold text-etch mb-2">What Data We Collect</h2>
+            <p class="text-sm text-etch-light leading-relaxed mb-2">When you register for an account, we collect:</p>
+            <ul class="text-sm text-etch-light list-disc list-inside space-y-1">
+                <li><strong>Username</strong> &mdash; chosen by you during registration</li>
+                <li><strong>Name</strong> &mdash; first and last name (optional)</li>
+                <li><strong>Email address</strong> &mdash; optional, used for account recovery</li>
+                <li><strong>Affiliation</strong> &mdash; e.g. your university (optional)</li>
+                <li><strong>Avatar image</strong> &mdash; if you choose to upload one</li>
+                <li><strong>Password</strong> &mdash; stored as a salted hash, never in plaintext</li>
+            </ul>
+            <p class="text-sm text-etch-light leading-relaxed mt-2">When you use the platform, we record:</p>
+            <ul class="text-sm text-etch-light list-disc list-inside space-y-1">
+                <li>Sentences you contribute and reviews you submit (attributed to your username)</li>
+                <li>Discussion posts (attributed to your username)</li>
+                <li>Login timestamps via standard Django session management</li>
+            </ul>
+        </div>
+
+        <div>
+            <h2 class="text-lg font-semibold text-etch mb-2">Why We Collect It</h2>
+            <p class="text-sm text-etch-light leading-relaxed">
+                All data collection serves the platform's purpose: enabling collaborative review of Tamil writing conventions. We do not collect data for advertising, analytics profiling, or any commercial purpose. Contributions are attributed to usernames to maintain academic accountability in the review process.
+            </p>
+        </div>
+
+        <div>
+            <h2 class="text-lg font-semibold text-etch mb-2">Where Data Is Stored</h2>
+            <p class="text-sm text-etch-light leading-relaxed">
+                Data is stored in a PostgreSQL database hosted by <a href="https://supabase.com" target="_blank" rel="noopener" class="text-stylus hover:text-stylus-dark underline">Supabase</a> (Singapore region). The application runs on <a href="https://cloud.google.com/run" target="_blank" rel="noopener" class="text-stylus hover:text-stylus-dark underline">Google Cloud Run</a> (Singapore region). All data transfer uses HTTPS encryption.
+            </p>
+        </div>
+
+        <div>
+            <h2 class="text-lg font-semibold text-etch mb-2">Data Sharing</h2>
+            <p class="text-sm text-etch-light leading-relaxed">
+                We do not sell, trade, or share your personal data with third parties. Your contributions (sentences, reviews, discussions) are visible to other registered members as part of the collaborative process. If the project data is published for academic purposes, personal identifiers will be removed.
+            </p>
+        </div>
+
+        <div>
+            <h2 class="text-lg font-semibold text-etch mb-2">Your Rights</h2>
+            <p class="text-sm text-etch-light leading-relaxed">You may:</p>
+            <ul class="text-sm text-etch-light list-disc list-inside space-y-1">
+                <li>View and update your profile information at any time</li>
+                <li>Request deletion of your account and personal data</li>
+                <li>Request a copy of all data associated with your account</li>
+            </ul>
+            <p class="text-sm text-etch-light leading-relaxed mt-2">
+                To exercise any of these rights, contact <a href="mailto:tamiliam@gmail.com" class="text-stylus hover:text-stylus-dark underline">tamiliam@gmail.com</a>.
+            </p>
+        </div>
+
+        <div>
+            <h2 class="text-lg font-semibold text-etch mb-2">Changes to This Policy</h2>
+            <p class="text-sm text-etch-light leading-relaxed">
+                We may update this policy from time to time. Changes will be posted on this page with an updated date. Continued use of the platform after changes constitutes acceptance of the revised policy.
+            </p>
+        </div>
+    </div>
+</div>
+{% endblock %}

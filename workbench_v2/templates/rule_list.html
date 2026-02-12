@@ -1,0 +1,142 @@
+{% extends "base.html" %}
+{% block title %}Rules{% endblock %}
+{% block content %}
+
+<div class="flex items-center justify-between mb-6">
+    <div class="flex items-center gap-3">
+        <h1 class="text-2xl font-bold text-etch">Rules</h1>
+        <span class="text-sm text-etch-lighter">({{ total_count }})</span>
+        <div class="h-px flex-1 bg-grain-light"></div>
+    </div>
+    {% if is_admin %}
+    <a href="{% url 'rule_add' %}" class="bg-wood text-stylus-light px-4 py-2 rounded text-sm hover:bg-wood-dark transition-colors">+ Add Rule</a>
+    {% endif %}
+</div>
+
+<!-- Search & Filters -->
+<div class="leaf-card p-4 mb-6">
+    <form method="get" class="space-y-3">
+        <div class="flex gap-3">
+            <input type="text" name="q" value="{{ q }}" placeholder="Search rules by ID, title, or description..."
+                class="flex-1 border border-grain rounded-lg px-4 py-2 text-sm bg-leaf-50 text-etch
+                       focus:ring-2 focus:ring-stylus focus:border-stylus placeholder-grain tamil">
+            <button type="submit" class="bg-stylus text-leaf-50 px-5 py-2 rounded text-sm hover:bg-stylus-dark transition-colors">Search</button>
+        </div>
+        <div class="flex flex-wrap gap-3 items-end">
+            <div>
+                <label class="block text-xs text-etch-lighter mb-1">Category</label>
+                <select name="category" class="border border-grain rounded px-3 py-1.5 text-sm bg-leaf-50 text-etch">
+                    <option value="">All categories</option>
+                    <option value="இலக்கண அமைப்பில் சொற்கள்" {% if category == "இலக்கண அமைப்பில் சொற்கள்" %}selected{% endif %}>Grammar Structure</option>
+                    <option value="தனிச் சொற்களை எழுதும் முறை" {% if category == "தனிச் சொற்களை எழுதும் முறை" %}selected{% endif %}>Individual Words</option>
+                    <option value="சந்தி" {% if category == "சந்தி" %}selected{% endif %}>Sandhi</option>
+                </select>
+            </div>
+            <div>
+                <label class="block text-xs text-etch-lighter mb-1">Source</label>
+                <select name="source" class="border border-grain rounded px-3 py-1.5 text-sm bg-leaf-50 text-etch">
+                    <option value="">All sources</option>
+                    {% for s in sources %}
+                    <option value="{{ s.source_id }}" {% if source_filter == s.source_id %}selected{% endif %}>{{ s.name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div>
+                <label class="block text-xs text-etch-lighter mb-1">Status</label>
+                <select name="status" class="border border-grain rounded px-3 py-1.5 text-sm bg-leaf-50 text-etch">
+                    <option value="">All</option>
+                    <option value="complete" {% if status_filter == "complete" %}selected{% endif %}>Complete</option>
+                    <option value="in_progress" {% if status_filter == "in_progress" %}selected{% endif %}>In Progress</option>
+                    <option value="empty" {% if status_filter == "empty" %}selected{% endif %}>No Sentences</option>
+                </select>
+            </div>
+            <button type="submit" class="bg-stylus text-leaf-50 px-4 py-1.5 rounded text-sm hover:bg-stylus-dark">Filter</button>
+            {% if q or category or source_filter or status_filter %}
+            <a href="{% url 'rule_list' %}" class="text-sm text-etch-lighter hover:text-etch py-1.5">Clear filters</a>
+            {% endif %}
+        </div>
+    </form>
+</div>
+
+<!-- Rules Table -->
+<div class="leaf-card overflow-hidden">
+    <table class="w-full text-sm">
+        <thead>
+            <tr class="border-b border-grain bg-leaf-200">
+                <th class="px-4 py-3 text-left text-xs font-medium text-etch-lighter">Rule ID</th>
+                <th class="px-4 py-3 text-left text-xs font-medium text-etch-lighter">Title</th>
+                <th class="px-4 py-3 text-center text-xs font-medium text-etch-lighter">Category</th>
+                <th class="px-4 py-3 text-center text-xs font-medium text-etch-lighter">Correct</th>
+                <th class="px-4 py-3 text-center text-xs font-medium text-etch-lighter">Wrong</th>
+                <th class="px-4 py-3 text-center text-xs font-medium text-etch-lighter">Accepted</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for rule in page %}
+            <tr class="border-b border-grain-light hover:bg-leaf-200 cursor-pointer transition-colors"
+                onclick="window.location='{% url 'rule_detail' rule.rule_id %}'">
+                <td class="px-4 py-3">
+                    <span class="font-mono text-sm font-semibold text-stylus">{{ rule.rule_id }}</span>
+                </td>
+                <td class="px-4 py-3">
+                    <span class="tamil-serif text-etch">{{ rule.title }}</span>
+                    {% if rule.subtitle %}<span class="text-xs text-etch-lighter ml-2 tamil">{{ rule.subtitle }}</span>{% endif %}
+                </td>
+                <td class="px-4 py-3 text-center">
+                    <span class="px-2 py-0.5 rounded text-xs
+                        {% if rule.category_color == 'blue' %}bg-stylus/10 text-stylus-dark
+                        {% elif rule.category_color == 'green' %}bg-palmgreen-bg text-palmgreen
+                        {% elif rule.category_color == 'purple' %}bg-terracotta-bg text-terracotta
+                        {% else %}bg-leaf-300 text-etch-light{% endif %}">
+                        {{ rule.category_short }}
+                    </span>
+                </td>
+                <td class="px-4 py-3 text-center text-palmgreen font-medium">{{ rule.correct_ct }}</td>
+                <td class="px-4 py-3 text-center text-terracotta font-medium">{{ rule.wrong_ct }}</td>
+                <td class="px-4 py-3 text-center">
+                    {% if rule.total_ct > 0 %}
+                    <span class="text-xs text-etch-lighter">{{ rule.accepted_ct }}/{{ rule.total_ct }}</span>
+                    {% else %}
+                    <span class="text-xs text-grain">—</span>
+                    {% endif %}
+                </td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="6" class="px-4 py-8 text-center text-etch-lighter">No rules found.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    {% if page.has_other_pages %}
+    <div class="px-4 py-3 border-t border-grain flex items-center justify-between bg-leaf-200">
+        <span class="text-sm text-etch-lighter">Page {{ page.number }} of {{ page.paginator.num_pages }}</span>
+        <div class="flex gap-1">
+            {% if page.has_previous %}
+            <a href="?page=1&q={{ q }}&category={{ category }}&source={{ source_filter }}&status={{ status_filter }}"
+               class="px-2.5 py-1 border border-grain rounded text-sm hover:bg-leaf-300 text-etch-light" title="First">&laquo;</a>
+            <a href="?page={{ page.previous_page_number }}&q={{ q }}&category={{ category }}&source={{ source_filter }}&status={{ status_filter }}"
+               class="px-2.5 py-1 border border-grain rounded text-sm hover:bg-leaf-300 text-etch-light" title="Previous">&lsaquo;</a>
+            {% endif %}
+            {% for p in page.paginator.page_range %}
+                {% if p == page.number %}
+                <span class="px-2.5 py-1 border border-stylus rounded text-sm bg-stylus/20 text-stylus-dark font-medium">{{ p }}</span>
+                {% elif p == 1 or p == page.paginator.num_pages or p >= page.number|add:"-2" and p <= page.number|add:"2" %}
+                <a href="?page={{ p }}&q={{ q }}&category={{ category }}&source={{ source_filter }}&status={{ status_filter }}"
+                   class="px-2.5 py-1 border border-grain rounded text-sm hover:bg-leaf-300 text-etch-light">{{ p }}</a>
+                {% elif p == 2 and page.number > 4 or p == page.paginator.num_pages|add:"-1" and page.number < page.paginator.num_pages|add:"-3" %}
+                <span class="px-1 py-1 text-sm text-etch-lighter">&hellip;</span>
+                {% endif %}
+            {% endfor %}
+            {% if page.has_next %}
+            <a href="?page={{ page.next_page_number }}&q={{ q }}&category={{ category }}&source={{ source_filter }}&status={{ status_filter }}"
+               class="px-2.5 py-1 border border-grain rounded text-sm hover:bg-leaf-300 text-etch-light" title="Next">&rsaquo;</a>
+            <a href="?page={{ page.paginator.num_pages }}&q={{ q }}&category={{ category }}&source={{ source_filter }}&status={{ status_filter }}"
+               class="px-2.5 py-1 border border-grain rounded text-sm hover:bg-leaf-300 text-etch-light" title="Last">&raquo;</a>
+            {% endif %}
+        </div>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

@@ -1,0 +1,102 @@
+{% extends "base.html" %}
+{% block title %}Invite{% endblock %}
+{% block content %}
+
+<div class="max-w-2xl mx-auto">
+    <h1 class="text-2xl font-bold text-etch mb-6">Invite a Collaborator</h1>
+
+    <!-- Invite Form -->
+    <div class="leaf-card p-5 mb-6">
+        <form method="post" class="space-y-4">
+            {% csrf_token %}
+            <div>
+                <label class="block text-xs text-etch-lighter mb-1">Email (optional — for your reference)</label>
+                {{ form.email }}
+            </div>
+            {% if is_admin %}
+            <div>
+                <label class="block text-xs text-etch-lighter mb-1">Role</label>
+                {{ form.role }}
+            </div>
+            {% endif %}
+            <div class="flex justify-end">
+                <button type="submit" class="inline-flex items-center gap-1.5 bg-wood text-stylus-light px-5 py-2 rounded-lg text-sm font-medium hover:bg-wood-dark transition-colors">
+                    <span class="material-symbols-outlined" style="font-size:18px">send</span>
+                    Create Invitation Link
+                </button>
+            </div>
+        </form>
+    </div>
+
+    <!-- Active Invitations -->
+    {% if active_invitations %}
+    <div class="leaf-card overflow-hidden mb-6">
+        <div class="p-4 border-b border-grain">
+            <h3 class="font-semibold text-etch">Active Invitations</h3>
+        </div>
+        <div class="divide-y divide-grain-light">
+            {% for inv in active_invitations %}
+            <div class="px-4 py-3">
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center gap-3">
+                        <span class="px-2 py-0.5 rounded text-xs font-medium
+                            {% if inv.role == 'admin' %}bg-stylus/20 text-stylus-dark
+                            {% elif inv.role == 'reviewer' %}bg-palmgreen-bg text-palmgreen
+                            {% else %}bg-leaf-300 text-etch-light{% endif %}">
+                            {{ inv.get_role_display }}
+                        </span>
+                        {% if inv.email %}
+                        <span class="text-sm text-etch-light">{{ inv.email }}</span>
+                        {% else %}
+                        <span class="text-sm text-etch-lighter italic">No email</span>
+                        {% endif %}
+                    </div>
+                    <span class="text-xs text-etch-lighter">Expires in {{ inv.expires_at|timeuntil }}</span>
+                </div>
+                <div class="mt-2 flex items-center gap-2">
+                    <input type="text" readonly
+                        value="{{ request.scheme }}://{{ request.get_host }}{% url 'register' inv.token %}"
+                        class="flex-1 bg-leaf-50 border border-grain rounded px-3 py-1.5 text-xs font-mono text-etch-light select-all"
+                        onclick="this.select(); document.execCommand('copy');">
+                    <button onclick="navigator.clipboard.writeText(this.previousElementSibling.value); this.textContent='Copied!'; setTimeout(()=>this.textContent='Copy', 2000)"
+                        class="text-xs text-stylus hover:text-stylus-dark font-medium px-2 py-1 border border-grain rounded hover:bg-leaf-200 transition-colors">
+                        Copy
+                    </button>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Past Invitations (used or expired) -->
+    {% if past_invitations %}
+    <div class="leaf-card overflow-hidden opacity-60">
+        <div class="p-4 border-b border-grain">
+            <h3 class="font-semibold text-etch-lighter text-sm">Past Invitations</h3>
+        </div>
+        <div class="divide-y divide-grain-light">
+            {% for inv in past_invitations %}
+            <div class="px-4 py-2.5">
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center gap-3">
+                        <span class="px-2 py-0.5 rounded text-xs font-medium bg-leaf-300 text-etch-lighter">
+                            {{ inv.get_role_display }}
+                        </span>
+                        {% if inv.email %}
+                        <span class="text-sm text-etch-lighter">{{ inv.email }}</span>
+                        {% endif %}
+                    </div>
+                    {% if inv.is_used %}
+                    <span class="text-xs text-palmgreen font-medium">Registered</span>
+                    {% else %}
+                    <span class="text-xs text-terracotta">Expired</span>
+                    {% endif %}
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

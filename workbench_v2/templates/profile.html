@@ -1,0 +1,109 @@
+{% extends "base.html" %}
+{% block title %}Profile{% endblock %}
+{% block content %}
+
+<div class="max-w-2xl mx-auto">
+    <h1 class="text-2xl font-bold text-etch mb-6">Profile</h1>
+
+    <!-- Avatar & Role Badge -->
+    <div class="leaf-card p-5 mb-6">
+        <div class="flex items-center gap-4">
+            <!-- Avatar with upload -->
+            <div class="relative group">
+                {% if profile.avatar %}
+                <img src="{{ profile.avatar }}" alt="Avatar" class="w-16 h-16 rounded-full object-cover border-2 border-grain">
+                {% else %}
+                <div class="w-16 h-16 rounded-full bg-wood flex items-center justify-center border-2 border-grain">
+                    <span class="text-xl font-bold text-stylus-light">{{ user.username|make_list|first|upper }}</span>
+                </div>
+                {% endif %}
+                <button type="button" onclick="document.getElementById('avatar-input').click()"
+                    class="absolute inset-0 rounded-full bg-black/0 group-hover:bg-black/40 flex items-center justify-center transition-colors cursor-pointer">
+                    <span class="material-symbols-outlined text-white opacity-0 group-hover:opacity-100 transition-opacity" style="font-size:20px">photo_camera</span>
+                </button>
+                <form id="avatar-form" method="post" action="{% url 'upload_avatar' %}" enctype="multipart/form-data" class="hidden">
+                    {% csrf_token %}
+                    <input type="file" id="avatar-input" name="avatar" accept="image/*"
+                        onchange="document.getElementById('avatar-form').submit()">
+                </form>
+            </div>
+            <div>
+                <h2 class="font-semibold text-etch">{{ user.get_full_name|default:user.username }}</h2>
+                <div class="flex items-center gap-2 mt-1">
+                    <span class="px-2.5 py-0.5 rounded text-xs font-medium
+                        {% if user_role == 'admin' %}bg-stylus/20 text-stylus-dark
+                        {% elif user_role == 'reviewer' %}bg-palmgreen-bg text-palmgreen
+                        {% else %}bg-leaf-300 text-etch-light{% endif %}">
+                        {{ user_role|title }}
+                    </span>
+                    {% if profile.affiliation %}
+                    <span class="text-sm text-etch-lighter">{{ profile.affiliation }}</span>
+                    {% endif %}
+                </div>
+                <p class="text-xs text-etch-lighter mt-1">Hover over photo to change</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Profile Form -->
+    <div class="leaf-card p-5 mb-6">
+        <h3 class="font-semibold text-etch mb-4">Personal Information</h3>
+        <form method="post" class="space-y-4">
+            {% csrf_token %}
+            <div class="grid grid-cols-2 gap-4">
+                <div>
+                    <label class="block text-xs text-etch-lighter mb-1">First Name</label>
+                    {{ form.first_name }}
+                </div>
+                <div>
+                    <label class="block text-xs text-etch-lighter mb-1">Last Name</label>
+                    {{ form.last_name }}
+                </div>
+            </div>
+            <div>
+                <label class="block text-xs text-etch-lighter mb-1">Email</label>
+                {{ form.email }}
+            </div>
+            <div>
+                <label class="block text-xs text-etch-lighter mb-1">Affiliation</label>
+                {{ form.affiliation }}
+            </div>
+            <div class="flex justify-end">
+                <button type="submit" class="bg-wood text-stylus-light px-5 py-2 rounded-lg text-sm font-medium hover:bg-wood-dark transition-colors">
+                    Save Changes
+                </button>
+            </div>
+        </form>
+    </div>
+
+    <!-- Change Password -->
+    <div class="leaf-card p-5">
+        <h3 class="font-semibold text-etch mb-4">Change Password</h3>
+        <form method="post" action="{% url 'change_password' %}" class="space-y-4">
+            {% csrf_token %}
+            <div>
+                <label class="block text-xs text-etch-lighter mb-1">Current Password</label>
+                <input type="password" name="current_password" required
+                    class="w-full border border-grain rounded-lg px-4 py-2 text-sm bg-leaf-50 text-etch">
+            </div>
+            <div class="grid grid-cols-2 gap-4">
+                <div>
+                    <label class="block text-xs text-etch-lighter mb-1">New Password</label>
+                    <input type="password" name="new_password" required minlength="8"
+                        class="w-full border border-grain rounded-lg px-4 py-2 text-sm bg-leaf-50 text-etch">
+                </div>
+                <div>
+                    <label class="block text-xs text-etch-lighter mb-1">Confirm New Password</label>
+                    <input type="password" name="confirm_password" required minlength="8"
+                        class="w-full border border-grain rounded-lg px-4 py-2 text-sm bg-leaf-50 text-etch">
+                </div>
+            </div>
+            <div class="flex justify-end">
+                <button type="submit" class="bg-stylus text-leaf-50 px-5 py-2 rounded-lg text-sm font-medium hover:bg-stylus-dark transition-colors">
+                    Change Password
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

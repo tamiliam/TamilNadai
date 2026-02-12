@@ -1,0 +1,136 @@
+{% extends "base.html" %}
+{% block title %}About{% endblock %}
+{% block content %}
+
+<div class="max-w-3xl mx-auto">
+    <h1 class="text-3xl font-bold text-etch mb-2 tamil-serif">About Tamil Nadai</h1>
+    <p class="text-sm text-etch-lighter mb-8">A collaborative platform for Tamil writing standards</p>
+
+    <!-- Mission -->
+    <div class="leaf-card p-6 mb-6">
+        <h2 class="text-lg font-semibold text-etch mb-3">Our Mission</h2>
+        <p class="text-sm text-etch-light leading-relaxed mb-4">
+            Tamil Nadai is an open platform for documenting, discussing, and validating Tamil writing conventions. Our primary goal is to build a <strong>gold-standard evaluation dataset</strong> for testing how well Large Language Models (LLMs) handle Tamil writing &mdash; grounded in established standards and validated through scholarly collaboration.
+        </p>
+        <p class="text-sm text-etch-light leading-relaxed">
+            The name <span class="tamil-serif font-semibold">தமிழ் நடை</span> (Tamil Nadai) means "Tamil style" or "Tamil usage" &mdash; it refers to the accepted conventions of written Tamil, as distinct from grammar rules alone. Getting the நடை right is what makes Tamil text look and feel natural to a reader.
+        </p>
+    </div>
+
+    <!-- The Problem -->
+    <div class="leaf-card p-6 mb-6">
+        <h2 class="text-lg font-semibold text-etch mb-3">Why This Matters</h2>
+        <p class="text-sm text-etch-light leading-relaxed mb-4">
+            Tamil currently has only <strong>65 sentences</strong> in the IndicGEC benchmark &mdash; the most widely used grammar evaluation dataset for Indian languages. For a language with over 80 million speakers, this is wholly inadequate. LLMs like GPT, Gemini, and Claude consistently fail on exactly the prescriptive conventions our rules test &mdash; sandhi doubling, word joining, <span class="tamil">ஒரு</span> vs <span class="tamil">ஓர்</span> usage &mdash; yet there is no rigorous way to measure or compare their performance.
+        </p>
+        <p class="text-sm text-etch-light leading-relaxed mb-3">
+            Tamil Nadai aims to produce <strong>~500 expert-annotated sentence pairs</strong> (erroneous and corrected), each traced to a specific rule and page in an authoritative publication, organised into a 12-category error taxonomy. This dataset will be:
+        </p>
+        <ul class="space-y-1 text-sm text-etch-light list-disc list-inside">
+            <li>Published on HuggingFace for open access</li>
+            <li>The <strong>largest prescriptive Tamil grammar evaluation set</strong> in existence</li>
+            <li>Immediately usable to benchmark any LLM or NLP model on Tamil</li>
+            <li>A foundation for grammar checking tools, NLP training data, and teaching materials</li>
+        </ul>
+    </div>
+
+    <!-- Source -->
+    <div class="leaf-card p-6 mb-6">
+        <h2 class="text-lg font-semibold text-etch mb-3">Source Material</h2>
+        <p class="text-sm text-etch-light leading-relaxed mb-4">
+            Tamil Nadai builds on two foundations. The first is the
+            <span class="tamil-serif font-semibold">தமிழ் நடைக் கையேடு</span> (Tamil Writing Style Guide)
+            published by the <strong>Tamil Virtual University</strong>
+            (<a href="https://tamilvu.org" target="_blank" rel="noopener" class="text-stylus hover:text-stylus-dark underline">tamilvu.org</a>),
+            an institution of the Government of Tamil Nadu &mdash; the most authoritative contemporary reference for Tamil writing conventions.
+        </p>
+        <p class="text-sm text-etch-light leading-relaxed mb-4">
+            The second is a decade of work encoding these conventions into 85+ machine-readable grammar rules for
+            <a href="https://languagetool.org" target="_blank" rel="noopener" class="text-stylus hover:text-stylus-dark underline">LanguageTool</a>,
+            an open-source proofreading tool &mdash; the first systematic attempt to make Tamil writing conventions testable by software.
+        </p>
+        <p class="text-sm text-etch-light leading-relaxed">
+            The rules are organised into three categories:
+        </p>
+        <ul class="mt-2 space-y-1 text-sm text-etch-light list-disc list-inside">
+            <li><strong class="tamil">இலக்கண அமைப்பில் சொற்கள்</strong> &mdash; Word joining based on grammatical structure</li>
+            <li><strong class="tamil">தனிச் சொற்களை எழுதும் முறை</strong> &mdash; Conventions for writing individual words</li>
+            <li><strong class="tamil">சந்தி</strong> &mdash; Sandhi (euphonic combination rules)</li>
+        </ul>
+    </div>
+
+    <!-- How It Works -->
+    <div class="leaf-card p-6 mb-6">
+        <h2 class="text-lg font-semibold text-etch mb-3">How It Works</h2>
+        <p class="text-sm text-etch-light leading-relaxed mb-3">
+            Each rule in the workbench is paired with example sentences &mdash; both correct and incorrect usages. These sentences go through a collaborative review process:
+        </p>
+        <ol class="space-y-2 text-sm text-etch-light list-decimal list-inside">
+            <li>A contributor adds an example sentence (manually or with AI assistance)</li>
+            <li>Two independent reviewers evaluate the sentence</li>
+            <li>If both reviewers accept it, the sentence is permanently recorded</li>
+            <li>If either reviewer rejects it, the sentence is marked for revision</li>
+        </ol>
+        <p class="text-sm text-etch-light leading-relaxed mt-3">
+            This two-reviewer system ensures quality and consensus before any sentence becomes part of the reference collection.
+        </p>
+    </div>
+
+    <!-- University Collaboration -->
+    <div class="leaf-card p-6 mb-6">
+        <h2 class="text-lg font-semibold text-etch mb-3">University Collaboration</h2>
+        <p class="text-sm text-etch-light leading-relaxed mb-4">
+            Tamil Nadai is being developed as a collaborative research tool in partnership with the
+            <strong>Department of Malaysian Languages and Applied Linguistics</strong> at the
+            <strong>Faculty of Languages and Linguistics, Universiti Malaya</strong>
+            (<a href="https://fll.um.edu.my/jbmlt-introduction" target="_blank" rel="noopener" class="text-stylus hover:text-stylus-dark underline">fll.um.edu.my</a>).
+            The department offers one of Malaysia's only Bachelor programmes in Tamil Language and Linguistics.
+        </p>
+        <p class="text-sm text-etch-light leading-relaxed">
+            We welcome collaboration from other universities and language institutions. If your department works on Tamil linguistics, corpus development, or computational approaches to Tamil, we would be glad to have you involved.
+        </p>
+    </div>
+
+    <!-- Free Software -->
+    <div class="leaf-card p-6 mb-6">
+        <h2 class="text-lg font-semibold text-etch mb-3">Free Software</h2>
+        <p class="text-sm text-etch-light leading-relaxed mb-3">
+            Tamil Nadai is <strong>Free Software</strong>, released under the
+            <strong>GNU General Public License (GPL)</strong>. This means:
+        </p>
+        <ul class="space-y-1 text-sm text-etch-light list-disc list-inside">
+            <li>Anyone can use, study, and modify the software</li>
+            <li>Modified versions must also be made freely available</li>
+            <li>The data and rules collected are a public good, not proprietary</li>
+        </ul>
+        <p class="text-sm text-etch-light leading-relaxed mt-3">
+            We believe that language standards belong to the community that uses the language. No corporation or institution should be able to restrict access to the rules of how Tamil is written.
+        </p>
+    </div>
+
+    <!-- Background -->
+    <div class="leaf-card p-6 mb-6">
+        <h2 class="text-lg font-semibold text-etch mb-3">Background</h2>
+        <p class="text-sm text-etch-light leading-relaxed mb-4">
+            This project builds on over a decade of work in Tamil language technology. The original effort began in 2014 with the creation of 85+ grammar checking rules for
+            <a href="https://languagetool.org" target="_blank" rel="noopener" class="text-stylus hover:text-stylus-dark underline">LanguageTool</a>,
+            an open-source proofreading tool. Those rules were the first systematic attempt to encode Tamil writing conventions into software that could check text automatically.
+        </p>
+        <p class="text-sm text-etch-light leading-relaxed">
+            The same contributor led Tamil localisation efforts for Mozilla Firefox, OpenOffice, and LibreOffice &mdash; making these tools accessible to millions of Tamil speakers. Tamil Nadai is the next step: building a validated, peer-reviewed corpus of Tamil writing conventions that can power the next generation of Tamil language tools.
+        </p>
+    </div>
+
+    <!-- Contact -->
+    <div class="leaf-card p-6">
+        <h2 class="text-lg font-semibold text-etch mb-3">Contact</h2>
+        <p class="text-sm text-etch-light leading-relaxed">
+            For questions, collaboration proposals, or feedback:
+        </p>
+        <p class="text-sm text-etch mt-2">
+            <span class="material-symbols-outlined align-middle text-stylus" style="font-size:18px">mail</span>
+            <a href="mailto:tamiliam@gmail.com" class="text-stylus hover:text-stylus-dark underline ml-1">tamiliam@gmail.com</a>
+        </p>
+    </div>
+</div>
+{% endblock %}

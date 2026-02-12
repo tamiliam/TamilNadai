@@ -1,0 +1,194 @@
+{% extends "base.html" %}
+{% block title %}Eval: {{ eval_run.get_model_name_display }}{% endblock %}
+{% block content %}
+
+<div class="flex items-center gap-3 mb-6">
+    <a href="{% url 'evaluate' %}" class="text-stylus hover:text-stylus-dark">
+        <span class="material-symbols-outlined" style="font-size:20px">arrow_back</span>
+    </a>
+    <h1 class="text-2xl font-bold text-etch">Evaluation Results</h1>
+    <div class="h-px flex-1 bg-grain-light"></div>
+</div>
+
+<!-- Summary Card -->
+<div class="leaf-card p-6 mb-6">
+    <div class="flex flex-wrap items-center gap-4 mb-4">
+        <h2 class="text-lg font-semibold text-etch">{{ eval_run.get_model_name_display }}</h2>
+        <span class="text-sm text-etch-lighter">{{ eval_run.created_at|date:"d M Y H:i" }}</span>
+        {% if eval_run.category_filter %}
+        <span class="px-2 py-0.5 rounded text-xs bg-stylus/10 text-stylus-dark tamil">{{ eval_run.category_filter }}</span>
+        {% endif %}
+        <span class="px-2 py-0.5 rounded text-xs bg-leaf-200 text-etch-lighter">{{ eval_run.get_status_filter_display }}</span>
+    </div>
+
+    <!-- Download buttons -->
+    <div class="flex gap-3 mb-4">
+        <a href="{% url 'export_eval_run' run_id=eval_run.id fmt='csv' %}"
+           class="inline-flex items-center gap-1.5 text-sm text-stylus hover:text-stylus-dark transition-colors">
+            <span class="material-symbols-outlined" style="font-size:16px">download</span>
+            Download CSV
+        </a>
+        <a href="{% url 'export_eval_run' run_id=eval_run.id fmt='json' %}"
+           class="inline-flex items-center gap-1.5 text-sm text-stylus hover:text-stylus-dark transition-colors">
+            <span class="material-symbols-outlined" style="font-size:16px">download</span>
+            Download JSON
+        </a>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+        <div class="bg-leaf-50 rounded-lg p-4 border border-grain-light">
+            <p class="text-sm text-etch-lighter">Sentences Tested</p>
+            <p class="text-3xl font-bold text-etch">{{ eval_run.total_sentences }}</p>
+        </div>
+        <div class="bg-leaf-50 rounded-lg p-4 border border-grain-light">
+            <p class="text-sm text-etch-lighter">Detection Rate</p>
+            <p class="text-3xl font-bold {% if eval_run.detection_rate >= 70 %}text-palmgreen{% elif eval_run.detection_rate >= 40 %}text-stylus-dark{% else %}text-terracotta{% endif %}">
+                {% if eval_run.detection_rate is not None %}{{ eval_run.detection_rate }}%{% else %}—{% endif %}
+            </p>
+            <p class="text-xs text-etch-lighter mt-1">Wrong sentences where model detected an error</p>
+        </div>
+        <div class="bg-leaf-50 rounded-lg p-4 border border-grain-light">
+            <p class="text-sm text-etch-lighter">Correction Accuracy</p>
+            <p class="text-3xl font-bold {% if eval_run.correction_accuracy >= 50 %}text-palmgreen{% elif eval_run.correction_accuracy >= 25 %}text-stylus-dark{% else %}text-terracotta{% endif %}">
+                {% if eval_run.correction_accuracy is not None %}{{ eval_run.correction_accuracy }}%{% else %}—{% endif %}
+            </p>
+            <p class="text-xs text-etch-lighter mt-1">Wrong sentences fixed to exact correct form</p>
+        </div>
+        <div class="bg-leaf-50 rounded-lg p-4 border border-grain-light">
+            <p class="text-sm text-etch-lighter">Preservation Rate</p>
+            <p class="text-3xl font-bold {% if eval_run.preservation_rate >= 90 %}text-palmgreen{% elif eval_run.preservation_rate >= 70 %}text-stylus-dark{% else %}text-terracotta{% endif %}">
+                {% if eval_run.preservation_rate is not None %}{{ eval_run.preservation_rate }}%{% else %}—{% endif %}
+            </p>
+            <p class="text-xs text-etch-lighter mt-1">Correct sentences left unchanged</p>
+        </div>
+    </div>
+</div>
+
+<!-- Per-Category Breakdown -->
+{% if categories %}
+<div class="leaf-card p-6 mb-6">
+    <h2 class="text-lg font-semibold text-etch mb-4">Category Breakdown</h2>
+    <div class="overflow-x-auto">
+        <table class="w-full text-sm">
+            <thead>
+                <tr class="text-left text-etch-lighter border-b border-grain">
+                    <th class="pb-2 pr-4">Category</th>
+                    <th class="pb-2 pr-4 text-right">Sentences</th>
+                    <th class="pb-2 pr-4 text-right">Detection</th>
+                    <th class="pb-2 pr-4 text-right">Accuracy</th>
+                    <th class="pb-2 text-right">Preservation</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for cat in categories %}
+                <tr class="border-b border-grain-light">
+                    <td class="py-2.5 pr-4">
+                        <span class="tamil-serif text-etch">{{ cat.name }}</span>
+                        <span class="text-xs text-etch-lighter ml-1">({{ cat.short }})</span>
+                    </td>
+                    <td class="py-2.5 pr-4 text-right text-etch">{{ cat.total }}</td>
+                    <td class="py-2.5 pr-4 text-right">
+                        <span class="{% if cat.detection_rate >= 70 %}text-palmgreen{% elif cat.detection_rate >= 40 %}text-stylus-dark{% else %}text-terracotta{% endif %} font-medium">
+                            {{ cat.detection_rate }}%
+                        </span>
+                    </td>
+                    <td class="py-2.5 pr-4 text-right">
+                        <span class="{% if cat.correction_accuracy >= 50 %}text-palmgreen{% elif cat.correction_accuracy >= 25 %}text-stylus-dark{% else %}text-terracotta{% endif %} font-medium">
+                            {{ cat.correction_accuracy }}%
+                        </span>
+                    </td>
+                    <td class="py-2.5 text-right">
+                        <span class="{% if cat.preservation_rate >= 90 %}text-palmgreen{% elif cat.preservation_rate >= 70 %}text-stylus-dark{% else %}text-terracotta{% endif %} font-medium">
+                            {{ cat.preservation_rate }}%
+                        </span>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endif %}
+
+<!-- Sentence-Level Results -->
+<div class="leaf-card p-6">
+    <div class="flex items-center justify-between mb-4">
+        <h2 class="text-lg font-semibold text-etch">Sentence Results</h2>
+        <div class="flex gap-2">
+            <!-- Outcome Filter -->
+            <select onchange="window.location.search='outcome='+this.value+'&category={{ category_filter }}'"
+                class="border border-grain rounded-lg px-3 py-1.5 text-xs bg-leaf-50 text-etch focus:ring-1 focus:ring-stylus">
+                <option value="" {% if not outcome_filter %}selected{% endif %}>All Outcomes</option>
+                <option value="true_positive" {% if outcome_filter == 'true_positive' %}selected{% endif %}>True Positive</option>
+                <option value="partial" {% if outcome_filter == 'partial' %}selected{% endif %}>Partial</option>
+                <option value="false_negative" {% if outcome_filter == 'false_negative' %}selected{% endif %}>False Negative</option>
+                <option value="true_negative" {% if outcome_filter == 'true_negative' %}selected{% endif %}>True Negative</option>
+                <option value="false_positive" {% if outcome_filter == 'false_positive' %}selected{% endif %}>False Positive</option>
+                <option value="error" {% if outcome_filter == 'error' %}selected{% endif %}>Error</option>
+            </select>
+        </div>
+    </div>
+
+    {% if page.object_list %}
+    <div class="overflow-x-auto">
+        <table class="w-full text-sm">
+            <thead>
+                <tr class="text-left text-etch-lighter border-b border-grain">
+                    <th class="pb-2 pr-3">Rule</th>
+                    <th class="pb-2 pr-3">Type</th>
+                    <th class="pb-2 pr-3">Original</th>
+                    <th class="pb-2 pr-3">Model Response</th>
+                    <th class="pb-2">Outcome</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for r in page %}
+                <tr class="border-b border-grain-light">
+                    <td class="py-2.5 pr-3">
+                        <a href="{% url 'rule_detail' r.sentence.rule_id %}" class="font-mono text-xs text-stylus hover:underline">{{ r.sentence.rule_id }}</a>
+                    </td>
+                    <td class="py-2.5 pr-3">
+                        <span class="px-2 py-0.5 rounded text-xs
+                            {% if r.sentence.sentence_type == 'correct' %}bg-palmgreen-bg text-palmgreen
+                            {% else %}bg-terracotta-bg text-terracotta{% endif %}">
+                            {{ r.sentence.get_sentence_type_display }}
+                        </span>
+                    </td>
+                    <td class="py-2.5 pr-3 tamil text-etch max-w-xs">
+                        {{ r.sentence.sentence|truncatechars:60 }}
+                    </td>
+                    <td class="py-2.5 pr-3 tamil text-etch-light max-w-xs">
+                        {{ r.model_response|truncatechars:60 }}
+                    </td>
+                    <td class="py-2.5">
+                        <span class="px-2 py-0.5 rounded text-xs {{ r.outcome_badge_class }}">
+                            {{ r.get_outcome_display }}
+                        </span>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Pagination -->
+    {% if page.has_other_pages %}
+    <div class="flex justify-center gap-2 mt-4 pt-4 border-t border-grain-light">
+        {% if page.has_previous %}
+        <a href="?page={{ page.previous_page_number }}&outcome={{ outcome_filter }}&category={{ category_filter }}"
+            class="px-3 py-1.5 rounded border border-grain text-xs text-etch hover:bg-leaf-200">Previous</a>
+        {% endif %}
+        <span class="px-3 py-1.5 text-xs text-etch-lighter">Page {{ page.number }} of {{ page.paginator.num_pages }}</span>
+        {% if page.has_next %}
+        <a href="?page={{ page.next_page_number }}&outcome={{ outcome_filter }}&category={{ category_filter }}"
+            class="px-3 py-1.5 rounded border border-grain text-xs text-etch hover:bg-leaf-200">Next</a>
+        {% endif %}
+    </div>
+    {% endif %}
+
+    {% else %}
+    <p class="text-etch-lighter text-sm">No results match the selected filters.</p>
+    {% endif %}
+</div>
+
+{% endblock %}

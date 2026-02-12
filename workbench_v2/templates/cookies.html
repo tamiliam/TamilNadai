@@ -1,0 +1,74 @@
+{% extends "base.html" %}
+{% block title %}Cookie Policy{% endblock %}
+{% block content %}
+
+<div class="max-w-3xl mx-auto">
+    <h1 class="text-3xl font-bold text-etch mb-2">Cookie Policy</h1>
+    <p class="text-sm text-etch-lighter mb-8">Last updated: February 2026</p>
+
+    <div class="leaf-card p-6 space-y-6">
+        <div>
+            <h2 class="text-lg font-semibold text-etch mb-2">What Are Cookies</h2>
+            <p class="text-sm text-etch-light leading-relaxed">
+                Cookies are small text files stored on your device when you visit a website. They are widely used to make websites work correctly and to provide information to site operators.
+            </p>
+        </div>
+
+        <div>
+            <h2 class="text-lg font-semibold text-etch mb-2">Cookies We Use</h2>
+            <p class="text-sm text-etch-light leading-relaxed mb-3">
+                Tamil Nadai uses only essential cookies required for the platform to function. We do not use advertising, analytics, or tracking cookies.
+            </p>
+            <div class="overflow-x-auto">
+                <table class="w-full text-sm">
+                    <thead>
+                        <tr class="border-b border-grain">
+                            <th class="text-left py-2 pr-4 text-xs font-medium text-etch-lighter">Cookie</th>
+                            <th class="text-left py-2 pr-4 text-xs font-medium text-etch-lighter">Purpose</th>
+                            <th class="text-left py-2 text-xs font-medium text-etch-lighter">Duration</th>
+                        </tr>
+                    </thead>
+                    <tbody class="text-etch-light">
+                        <tr class="border-b border-grain-light">
+                            <td class="py-2 pr-4 font-mono text-xs">sessionid</td>
+                            <td class="py-2 pr-4">Keeps you logged in while using the platform</td>
+                            <td class="py-2">2 weeks</td>
+                        </tr>
+                        <tr class="border-b border-grain-light">
+                            <td class="py-2 pr-4 font-mono text-xs">csrftoken</td>
+                            <td class="py-2 pr-4">Protects against cross-site request forgery attacks</td>
+                            <td class="py-2">1 year</td>
+                        </tr>
+                        <tr>
+                            <td class="py-2 pr-4 font-mono text-xs">messages</td>
+                            <td class="py-2 pr-4">Displays one-time notifications (e.g. "Profile updated")</td>
+                            <td class="py-2">Session</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div>
+            <h2 class="text-lg font-semibold text-etch mb-2">Third-Party Cookies</h2>
+            <p class="text-sm text-etch-light leading-relaxed">
+                We do not set any third-party cookies. The platform loads fonts from Google Fonts and the Tailwind CSS framework from a CDN. These services may set their own cookies according to their respective privacy policies. We do not control these cookies.
+            </p>
+        </div>
+
+        <div>
+            <h2 class="text-lg font-semibold text-etch mb-2">Managing Cookies</h2>
+            <p class="text-sm text-etch-light leading-relaxed">
+                You can control cookies through your browser settings. However, disabling cookies will prevent you from logging into the platform, as the session cookie is required for authentication.
+            </p>
+        </div>
+
+        <div>
+            <h2 class="text-lg font-semibold text-etch mb-2">Contact</h2>
+            <p class="text-sm text-etch-light leading-relaxed">
+                Questions about cookies: <a href="mailto:tamiliam@gmail.com" class="text-stylus hover:text-stylus-dark underline">tamiliam@gmail.com</a>.
+            </p>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,93 @@
+{% extends "base.html" %}
+{% block title %}Members{% endblock %}
+{% block content %}
+
+<div class="flex items-center justify-between mb-6">
+    <div class="flex items-center gap-3">
+        <h1 class="text-2xl font-bold text-etch">Members</h1>
+        <span class="text-sm text-etch-lighter">({{ members|length }})</span>
+    </div>
+    <a href="{% url 'invite' %}" class="inline-flex items-center gap-1.5 bg-wood text-stylus-light px-4 py-2 rounded-lg text-sm font-medium hover:bg-wood-dark transition-colors">
+        <span class="material-symbols-outlined" style="font-size:18px">person_add</span>
+        Invite
+    </a>
+</div>
+
+<div class="leaf-card overflow-hidden">
+    <table class="w-full text-sm">
+        <thead>
+            <tr class="border-b border-grain bg-leaf-200">
+                <th class="px-4 py-3 text-left text-xs font-medium text-etch-lighter">User</th>
+                <th class="px-4 py-3 text-left text-xs font-medium text-etch-lighter">Role</th>
+                <th class="px-4 py-3 text-left text-xs font-medium text-etch-lighter">Affiliation</th>
+                <th class="px-4 py-3 text-left text-xs font-medium text-etch-lighter">Joined</th>
+                <th class="px-4 py-3 text-right text-xs font-medium text-etch-lighter">Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for m in members %}
+            <tr class="border-b border-grain-light hover:bg-leaf-200 transition-colors">
+                <td class="px-4 py-3">
+                    <div class="flex items-center gap-3">
+                        {% if m.profile.avatar %}
+                        <img src="{{ m.profile.avatar }}" alt="" class="w-8 h-8 rounded-full object-cover flex-shrink-0 border border-grain">
+                        {% else %}
+                        <div class="w-8 h-8 rounded-full bg-wood flex items-center justify-center flex-shrink-0">
+                            <span class="text-xs font-bold text-stylus-light">{{ m.username|make_list|first|upper }}</span>
+                        </div>
+                        {% endif %}
+                        <div>
+                            <span class="font-medium text-etch">{{ m.get_full_name|default:m.username }}</span>
+                            {% if m.get_full_name %}<span class="text-xs text-etch-lighter ml-1">({{ m.username }})</span>{% endif %}
+                            {% if m.email %}<div class="text-xs text-etch-lighter">{{ m.email }}</div>{% endif %}
+                        </div>
+                    </div>
+                </td>
+                <td class="px-4 py-3">
+                    {% with role=m.profile.role %}
+                    <span class="px-2.5 py-0.5 rounded text-xs font-medium
+                        {% if role == 'admin' %}bg-stylus/20 text-stylus-dark
+                        {% elif role == 'reviewer' %}bg-palmgreen-bg text-palmgreen
+                        {% else %}bg-leaf-300 text-etch-light{% endif %}">
+                        {{ role|title }}
+                    </span>
+                    {% endwith %}
+                </td>
+                <td class="px-4 py-3 text-etch-light">
+                    {{ m.profile.affiliation|default:"—" }}
+                </td>
+                <td class="px-4 py-3 text-etch-lighter text-xs">
+                    {{ m.date_joined|date:"d M Y" }}
+                </td>
+                <td class="px-4 py-3 text-right">
+                    {% if m != request.user %}
+                    <div class="flex items-center justify-end gap-2">
+                        <!-- Role change -->
+                        <form method="post" action="{% url 'change_role' m.id %}" class="inline-flex items-center gap-1">
+                            {% csrf_token %}
+                            <select name="role" class="border border-grain rounded px-2 py-1 text-xs bg-leaf-50 text-etch">
+                                <option value="admin" {% if m.profile.role == 'admin' %}selected{% endif %}>Admin</option>
+                                <option value="reviewer" {% if m.profile.role == 'reviewer' %}selected{% endif %}>Reviewer</option>
+                                <option value="member" {% if m.profile.role == 'member' %}selected{% endif %}>Member</option>
+                            </select>
+                            <button type="submit" class="text-xs text-stylus hover:text-stylus-dark font-medium">Set</button>
+                        </form>
+                        <!-- Remove -->
+                        <form method="post" action="{% url 'remove_member' m.id %}"
+                              onsubmit="return confirm('Deactivate {{ m.username }}?')">
+                            {% csrf_token %}
+                            <button type="submit" class="text-xs text-terracotta hover:text-terracotta-light">
+                                <span class="material-symbols-outlined" style="font-size:16px">person_remove</span>
+                            </button>
+                        </form>
+                    </div>
+                    {% else %}
+                    <span class="text-xs text-etch-lighter italic">You</span>
+                    {% endif %}
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

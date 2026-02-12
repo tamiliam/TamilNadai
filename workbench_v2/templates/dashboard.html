@@ -1,0 +1,81 @@
+{% extends "base.html" %}
+{% block title %}Dashboard{% endblock %}
+{% block content %}
+<div class="flex items-center gap-3 mb-6">
+    <h1 class="text-2xl font-bold text-etch">Dashboard</h1>
+    <div class="h-px flex-1 bg-grain-light"></div>
+</div>
+
+<!-- Metric Cards -->
+<div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
+    <div class="leaf-card p-5">
+        <p class="text-sm text-etch-lighter">Total Rules</p>
+        <p class="text-3xl font-bold text-etch">{{ total_rules }}</p>
+    </div>
+    <div class="leaf-card p-5">
+        <p class="text-sm text-etch-lighter">Sentences</p>
+        <p class="text-3xl font-bold text-etch">{{ total_sentences }}</p>
+    </div>
+    <div class="leaf-card p-5">
+        <p class="text-sm text-etch-lighter">Accepted</p>
+        <p class="text-3xl font-bold text-palmgreen">{{ accepted }}</p>
+    </div>
+    <div class="leaf-card p-5">
+        <p class="text-sm text-etch-lighter">Pending Review</p>
+        <p class="text-3xl font-bold text-stylus">{{ pending }}</p>
+    </div>
+</div>
+
+<!-- Category Progress -->
+<div class="leaf-card p-6 mb-8">
+    <h2 class="text-lg font-semibold text-etch mb-4">Category Progress</h2>
+    {% for cat in categories %}
+    <div class="mb-4">
+        <div class="flex justify-between items-center mb-1">
+            <span class="text-sm font-medium tamil-serif text-etch">{{ cat.name }} <span class="text-etch-lighter">({{ cat.short }})</span></span>
+            <span class="text-sm text-etch-lighter">{{ cat.rule_count }} rules &middot; {{ cat.accepted }}/{{ cat.sentence_count }} accepted</span>
+        </div>
+        <div class="w-full bg-leaf-300 rounded-full h-2.5">
+            <div class="bg-stylus h-2.5 rounded-full transition-all" style="width: {{ cat.pct }}%"></div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+
+<!-- Recent Activity -->
+<div class="leaf-card p-6">
+    <h2 class="text-lg font-semibold text-etch mb-4">Recent Activity</h2>
+    {% if recent %}
+    <div class="overflow-x-auto">
+        <table class="w-full text-sm">
+            <thead>
+                <tr class="text-left text-etch-lighter border-b border-grain">
+                    <th class="pb-2">Time</th>
+                    <th class="pb-2">Reviewer</th>
+                    <th class="pb-2">Action</th>
+                    <th class="pb-2">Sentence</th>
+                    <th class="pb-2">Rule</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for r in recent %}
+                <tr class="border-b border-grain-light">
+                    <td class="py-2 text-etch-lighter">{{ r.created_at|timesince }} ago</td>
+                    <td class="py-2 text-etch">{{ r.reviewer.get_full_name|default:r.reviewer.username }}</td>
+                    <td class="py-2">
+                        <span class="px-2 py-0.5 rounded text-xs {% if r.action == 'accept' %}bg-palmgreen-bg text-palmgreen{% else %}bg-terracotta-bg text-terracotta{% endif %}">
+                            {{ r.get_action_display }}
+                        </span>
+                    </td>
+                    <td class="py-2 font-mono text-xs text-stylus">{{ r.sentence_id }}</td>
+                    <td class="py-2"><a href="{% url 'rule_detail' r.sentence.rule_id %}" class="text-stylus hover:underline">{{ r.sentence.rule_id }}</a></td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% else %}
+    <p class="text-etch-lighter text-sm">No review activity yet. Begin reviewing sentences to see activity here.</p>
+    {% endif %}
+</div>
+{% endblock %}

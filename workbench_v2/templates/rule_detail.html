@@ -1,0 +1,341 @@
+{% extends "base.html" %}
+{% block title %}{{ rule.rule_id }} — {{ rule.title }}{% endblock %}
+{% block content %}
+
+<!-- Breadcrumb + Prev/Next -->
+<nav class="flex items-center justify-between mb-6">
+    <div class="flex items-center gap-2 text-sm text-etch-lighter">
+        <a href="{% url 'rule_list' %}" class="hover:text-stylus transition-colors">Rules</a>
+        <span class="material-symbols-outlined" style="font-size:16px">chevron_right</span>
+        <span class="text-etch-light">{{ rule.category_short }}</span>
+        <span class="material-symbols-outlined" style="font-size:16px">chevron_right</span>
+        <span class="text-etch font-medium">{{ rule.rule_id }}</span>
+    </div>
+    <div class="flex items-center gap-1">
+        {% if prev_rule_id %}
+        <a href="{% url 'rule_detail' prev_rule_id %}" title="{{ prev_rule_id }}"
+           class="inline-flex items-center gap-1 px-2.5 py-1 text-sm text-etch-light border border-grain rounded-md hover:bg-leaf-200 transition-colors">
+            <span class="material-symbols-outlined" style="font-size:16px">chevron_left</span>
+            <span class="font-mono text-xs">{{ prev_rule_id }}</span>
+        </a>
+        {% endif %}
+        {% if next_rule_id %}
+        <a href="{% url 'rule_detail' next_rule_id %}" title="{{ next_rule_id }}"
+           class="inline-flex items-center gap-1 px-2.5 py-1 text-sm text-etch-light border border-grain rounded-md hover:bg-leaf-200 transition-colors">
+            <span class="font-mono text-xs">{{ next_rule_id }}</span>
+            <span class="material-symbols-outlined" style="font-size:16px">chevron_right</span>
+        </a>
+        {% endif %}
+    </div>
+</nav>
+
+<!-- Rule Header Card -->
+<div class="leaf-card p-6 mb-6">
+    <!-- Top row: ID + Category + Actions -->
+    <div class="flex items-start justify-between">
+        <div class="flex items-center gap-3">
+            <span class="px-3 py-1.5 bg-stylus/10 text-stylus-dark font-mono font-bold text-lg rounded-md border border-stylus/20">
+                {{ rule.rule_id }}
+            </span>
+            <span class="px-2.5 py-1 rounded-md text-xs font-medium
+                {% if rule.category_color == 'blue' %}bg-stylus/10 text-stylus-dark border border-stylus/20
+                {% elif rule.category_color == 'green' %}bg-palmgreen-bg text-palmgreen border border-palmgreen/20
+                {% elif rule.category_color == 'purple' %}bg-terracotta-bg text-terracotta border border-terracotta/20
+                {% else %}bg-leaf-300/50 text-etch-light border border-grain{% endif %}">
+                {{ rule.category_short }}
+            </span>
+        </div>
+        {% if is_admin %}
+        <div class="flex items-center gap-2">
+            <a href="{% url 'rule_edit' rule.rule_id %}"
+                class="inline-flex items-center gap-1.5 px-3 py-1.5 text-sm text-etch-light border border-grain rounded-md hover:bg-leaf-200 transition-colors">
+                <span class="material-symbols-outlined" style="font-size:18px">edit</span>
+                Edit
+            </a>
+            <form method="post" action="{% url 'rule_deactivate' rule.rule_id %}" onsubmit="return confirm('Deactivate this rule?')">
+                {% csrf_token %}
+                <button type="submit"
+                    class="inline-flex items-center gap-1.5 px-3 py-1.5 text-sm text-terracotta border border-terracotta/30 rounded-md hover:bg-terracotta-bg transition-colors">
+                    <span class="material-symbols-outlined" style="font-size:18px">archive</span>
+                    Deactivate
+                </button>
+            </form>
+        </div>
+        {% endif %}
+    </div>
+
+    <!-- Title & Description -->
+    <div class="mt-5">
+        {% if rule.title %}
+        <h1 class="text-2xl font-bold tamil-serif text-etch">{{ rule.title }}</h1>
+        {% endif %}
+        {% if rule.subtitle %}
+        <p class="text-base text-etch-lighter tamil mt-1">{{ rule.subtitle }}</p>
+        {% endif %}
+        {% if rule.description %}
+        <p class="text-etch-light tamil mt-3 leading-relaxed">{{ rule.description }}</p>
+        {% endif %}
+    </div>
+
+    <!-- Key Examples -->
+    {% if rule.example_1 or rule.example_2 %}
+    <div class="mt-5 p-4 bg-leaf-200/50 rounded-lg border border-grain-light">
+        <h4 class="text-xs font-medium text-etch-lighter uppercase tracking-wider mb-3">Key Examples</h4>
+        <div class="space-y-2">
+            {% if rule.example_1 %}
+            <div class="flex items-center gap-2">
+                <span class="material-symbols-outlined text-stylus" style="font-size:18px">arrow_forward</span>
+                <span class="tamil-serif font-semibold text-stylus text-lg">{{ rule.example_1 }}</span>
+            </div>
+            {% endif %}
+            {% if rule.example_2 %}
+            <div class="flex items-center gap-2">
+                <span class="material-symbols-outlined text-stylus" style="font-size:18px">arrow_forward</span>
+                <span class="tamil-serif font-semibold text-stylus text-lg">{{ rule.example_2 }}</span>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Source Reference -->
+    {% if rule.source_ref %}
+    <div class="mt-4 flex items-center gap-2 text-sm text-etch-lighter">
+        <span class="material-symbols-outlined" style="font-size:18px">menu_book</span>
+        {% if rule.source_url %}
+        <a href="{{ rule.source_url }}" target="_blank" class="text-stylus hover:underline">{{ rule.source_ref }}</a>
+        {% else %}
+        <span>{{ rule.source_ref }}</span>
+        {% endif %}
+        {% if rule.source.author %}<span>&mdash; {{ rule.source.author }}</span>{% endif %}
+        {% if rule.source.year %}<span>({{ rule.source.year }})</span>{% endif %}
+    </div>
+    {% endif %}
+</div>
+
+<!-- Correct Sentences -->
+<div class="mb-6">
+    <div class="flex items-center justify-between mb-4">
+        <div class="flex items-center gap-2">
+            <span class="material-symbols-outlined text-palmgreen" style="font-size:22px">check_circle</span>
+            <h2 class="text-lg font-semibold text-etch">Correct Sentences</h2>
+            <span class="px-2 py-0.5 bg-palmgreen-bg text-palmgreen text-xs rounded-full font-medium">{{ correct|length }}</span>
+        </div>
+        <button onclick="document.getElementById('add-correct-form').classList.toggle('hidden')"
+            class="inline-flex items-center gap-1.5 px-3 py-1.5 text-sm text-etch-light border border-grain rounded-md hover:bg-leaf-200 transition-colors">
+            <span class="material-symbols-outlined" style="font-size:18px">add</span>
+            {% if is_admin %}Add{% else %}Propose{% endif %}
+        </button>
+    </div>
+
+    <div id="add-correct-form" class="hidden mb-4 p-4 bg-leaf-200 rounded-lg border border-grain-light">
+        <form method="post" action="{% url 'add_sentence' rule.rule_id %}" class="flex gap-2 items-end">
+            {% csrf_token %}
+            <input type="hidden" name="sentence_type" value="correct">
+            <div class="flex-1">
+                <input type="text" name="sentence" id="input-correct" required placeholder="{% if is_admin %}Enter correct Tamil sentence...{% else %}Propose a correct Tamil sentence...{% endif %}"
+                    class="w-full border border-grain rounded-lg px-4 py-2.5 text-sm tamil bg-leaf-50 text-etch focus:ring-2 focus:ring-stylus placeholder-grain">
+            </div>
+            <button type="button" onclick="aiSuggest('correct')" id="ai-btn-correct"
+                class="inline-flex items-center gap-1 px-3 py-2.5 text-sm text-stylus-dark border border-stylus/30 rounded-lg hover:bg-stylus/10 transition-colors"
+                title="AI will suggest a sentence — edit it before submitting">
+                <span class="material-symbols-outlined" style="font-size:18px">auto_awesome</span>
+            </button>
+            <button type="submit" class="bg-palmgreen text-leaf-50 px-4 py-2.5 rounded-lg text-sm font-medium hover:bg-palmgreen-light transition-colors">{% if is_admin %}Add{% else %}Propose{% endif %}</button>
+        </form>
+    </div>
+
+    {% include "partials/sentence_cards.html" with sentences=correct type="correct" %}
+</div>
+
+<!-- Wrong Sentences -->
+<div class="mb-6">
+    <div class="flex items-center justify-between mb-4">
+        <div class="flex items-center gap-2">
+            <span class="material-symbols-outlined text-terracotta" style="font-size:22px">cancel</span>
+            <h2 class="text-lg font-semibold text-etch">Wrong Sentences</h2>
+            <span class="px-2 py-0.5 bg-terracotta-bg text-terracotta text-xs rounded-full font-medium">{{ wrong|length }}</span>
+        </div>
+        <div class="flex items-center gap-2">
+            <button onclick="document.getElementById('add-wrong-form').classList.toggle('hidden')"
+                class="inline-flex items-center gap-1.5 px-3 py-1.5 text-sm text-etch-light border border-grain rounded-md hover:bg-leaf-200 transition-colors">
+                <span class="material-symbols-outlined" style="font-size:18px">add</span>
+                {% if is_admin %}Add{% else %}Propose{% endif %}
+            </button>
+        </div>
+    </div>
+
+    <div id="add-wrong-form" class="hidden mb-4 p-4 bg-leaf-200 rounded-lg border border-grain-light">
+        <form method="post" action="{% url 'add_sentence' rule.rule_id %}" class="flex gap-2 items-end">
+            {% csrf_token %}
+            <input type="hidden" name="sentence_type" value="wrong">
+            <div class="flex-1">
+                <input type="text" name="sentence" id="input-wrong" required placeholder="{% if is_admin %}Enter wrong Tamil sentence...{% else %}Propose a wrong Tamil sentence...{% endif %}"
+                    class="w-full border border-grain rounded-lg px-4 py-2.5 text-sm tamil bg-leaf-50 text-etch focus:ring-2 focus:ring-stylus placeholder-grain">
+            </div>
+            <button type="button" onclick="aiSuggest('wrong')" id="ai-btn-wrong"
+                class="inline-flex items-center gap-1 px-3 py-2.5 text-sm text-stylus-dark border border-stylus/30 rounded-lg hover:bg-stylus/10 transition-colors"
+                title="AI will suggest a sentence — edit it before submitting">
+                <span class="material-symbols-outlined" style="font-size:18px">auto_awesome</span>
+            </button>
+            <button type="submit" class="bg-terracotta text-leaf-50 px-4 py-2.5 rounded-lg text-sm font-medium hover:bg-terracotta-light transition-colors">{% if is_admin %}Add{% else %}Propose{% endif %}</button>
+        </form>
+    </div>
+
+    {% include "partials/sentence_cards.html" with sentences=wrong type="wrong" %}
+</div>
+
+<!-- Discussion -->
+<div class="leaf-card mb-6">
+    <div class="p-4 border-b border-grain flex items-center gap-2">
+        <span class="material-symbols-outlined text-etch-light" style="font-size:20px">forum</span>
+        <h3 class="font-semibold text-etch">Discussion</h3>
+        {% if discussions %}
+        <span class="px-2 py-0.5 bg-leaf-300/50 text-etch-lighter text-xs rounded-full">{{ discussions|length }}</span>
+        {% endif %}
+    </div>
+    <div class="p-4">
+        {% for d in discussions %}
+        <div class="flex gap-3 mb-4 pb-4 border-b border-grain-light/50 last:border-0 last:mb-0 last:pb-0">
+            <!-- Avatar -->
+            {% if d.user.profile.avatar %}
+            <img src="{{ d.user.profile.avatar }}" alt="" class="flex-shrink-0 w-8 h-8 rounded-full object-cover border border-grain">
+            {% else %}
+            <div class="flex-shrink-0 w-8 h-8 rounded-full bg-wood flex items-center justify-center">
+                <span class="text-xs font-bold text-stylus-light">{{ d.user.username|make_list|first|upper }}</span>
+            </div>
+            {% endif %}
+            <div class="flex-1">
+                <div class="flex items-center justify-between mb-1">
+                    <div class="flex items-center gap-2">
+                        <span class="font-medium text-sm text-etch">{{ d.user.get_full_name|default:d.user.username }}</span>
+                        <span class="text-xs text-etch-lighter">{{ d.created_at|timesince }} ago</span>
+                    </div>
+                    {% if d.user == user or is_admin %}
+                    <form method="post" action="{% url 'delete_discussion' d.id %}" onsubmit="return confirm('Delete this comment?')">
+                        {% csrf_token %}
+                        <button type="submit" class="text-xs text-etch-lighter hover:text-terracotta transition-colors">
+                            <span class="material-symbols-outlined" style="font-size:14px">delete</span>
+                        </button>
+                    </form>
+                    {% endif %}
+                </div>
+                <p class="text-sm text-etch-light tamil leading-relaxed">{{ d.message }}</p>
+            </div>
+        </div>
+        {% empty %}
+        <p class="text-sm text-etch-lighter">No discussion yet. Reference sentences by ID (e.g. SEN-00042) when posting.</p>
+        {% endfor %}
+
+        <!-- Post form -->
+        <form method="post" action="{% url 'add_discussion' rule.rule_id %}" class="mt-4 flex gap-3 items-start">
+            {% csrf_token %}
+            {% if user_avatar %}
+            <img src="{{ user_avatar }}" alt="" class="flex-shrink-0 w-8 h-8 rounded-full object-cover border border-grain">
+            {% else %}
+            <div class="flex-shrink-0 w-8 h-8 rounded-full bg-grain flex items-center justify-center">
+                <span class="text-xs font-bold text-etch-light">{{ user.username|make_list|first|upper }}</span>
+            </div>
+            {% endif %}
+            <div class="flex-1">
+                <textarea name="message" required rows="2" placeholder="Discuss this rule... (reference sentences by ID, e.g. SEN-00042)"
+                    class="w-full border border-grain rounded-lg px-3 py-2 text-sm tamil bg-leaf-50 text-etch focus:ring-2 focus:ring-stylus placeholder-grain resize-none"></textarea>
+                <div class="flex justify-end mt-2">
+                    <button type="submit"
+                        class="inline-flex items-center gap-1.5 bg-wood text-stylus-light px-4 py-1.5 rounded-md text-sm font-medium hover:bg-wood-dark transition-colors">
+                        <span class="material-symbols-outlined" style="font-size:16px">send</span>
+                        Post
+                    </button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Recent Activity -->
+<div class="leaf-card">
+    <div class="p-4 border-b border-grain flex items-center gap-2">
+        <span class="material-symbols-outlined text-etch-light" style="font-size:20px">history</span>
+        <h3 class="font-semibold text-etch">Recent Activity</h3>
+    </div>
+    <div class="p-4">
+        {% for r in recent_activity %}
+        <div class="flex items-start gap-3 py-2.5 {% if not forloop.last %}border-b border-grain-light/30{% endif %}">
+            <span class="material-symbols-outlined mt-0.5 {% if r.action == 'accept' %}text-palmgreen{% else %}text-terracotta{% endif %}" style="font-size:18px">
+                {% if r.action == 'accept' %}check_circle{% else %}cancel{% endif %}
+            </span>
+            <div class="flex-1 flex flex-wrap items-center gap-x-2 gap-y-1 text-sm">
+                <span class="font-medium text-etch">{{ r.reviewer.get_full_name|default:r.reviewer.username }}</span>
+                <span class="px-2 py-0.5 rounded text-xs
+                    {% if r.action == 'accept' %}bg-palmgreen-bg text-palmgreen{% else %}bg-terracotta-bg text-terracotta{% endif %}">
+                    {{ r.get_action_display }}
+                </span>
+                <span class="font-mono text-xs text-stylus">{{ r.sentence_id }}</span>
+                {% if r.comment %}<span class="text-etch-lighter italic">&mdash; {{ r.comment|truncatechars:60 }}</span>{% endif %}
+            </div>
+            <span class="text-xs text-etch-lighter whitespace-nowrap">{{ r.created_at|timesince }} ago</span>
+        </div>
+        {% empty %}
+        <p class="text-sm text-etch-lighter py-2">No activity yet.</p>
+        {% endfor %}
+    </div>
+</div>
+
+<!-- Bottom Navigation -->
+{% if prev_rule_id or next_rule_id %}
+<div class="flex items-center justify-between mt-6 pt-4 border-t border-grain-light">
+    {% if prev_rule_id %}
+    <a href="{% url 'rule_detail' prev_rule_id %}"
+       class="inline-flex items-center gap-2 px-3 py-2 text-sm text-etch-light border border-grain rounded-md hover:bg-leaf-200 transition-colors">
+        <span class="material-symbols-outlined" style="font-size:18px">arrow_back</span>
+        <span class="font-mono font-medium">{{ prev_rule_id }}</span>
+    </a>
+    {% else %}
+    <div></div>
+    {% endif %}
+    <a href="{% url 'rule_list' %}" class="text-sm text-etch-lighter hover:text-stylus transition-colors">All Rules</a>
+    {% if next_rule_id %}
+    <a href="{% url 'rule_detail' next_rule_id %}"
+       class="inline-flex items-center gap-2 px-3 py-2 text-sm text-etch-light border border-grain rounded-md hover:bg-leaf-200 transition-colors">
+        <span class="font-mono font-medium">{{ next_rule_id }}</span>
+        <span class="material-symbols-outlined" style="font-size:18px">arrow_forward</span>
+    </a>
+    {% else %}
+    <div></div>
+    {% endif %}
+</div>
+{% endif %}
+
+<script>
+function aiSuggest(type) {
+    const input = document.getElementById('input-' + type);
+    const btn = document.getElementById('ai-btn-' + type);
+    const icon = btn.querySelector('.material-symbols-outlined');
+
+    btn.disabled = true;
+    icon.textContent = 'hourglass_empty';
+    icon.classList.add('animate-spin');
+    input.placeholder = 'AI is thinking...';
+
+    fetch('{% url "ai_suggest" rule.rule_id %}?type=' + type)
+        .then(r => r.json())
+        .then(data => {
+            if (data.sentence) {
+                input.value = data.sentence;
+                input.focus();
+                input.select();
+            } else {
+                input.placeholder = 'AI failed — type manually';
+            }
+        })
+        .catch(() => {
+            input.placeholder = 'AI failed — type manually';
+        })
+        .finally(() => {
+            btn.disabled = false;
+            icon.textContent = 'auto_awesome';
+            icon.classList.remove('animate-spin');
+        });
+}
+</script>
+{% endblock %}

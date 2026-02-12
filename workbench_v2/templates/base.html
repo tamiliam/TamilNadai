@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}தமிழ் நடை{% endblock %} — Tamil Nadai Project</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        leaf:       { 50: '#FFFDF7', 100: '#FDF6E3', 200: '#F5E6C8', 300: '#E8D4A8', 400: '#D4BA82' },
+                        etch:       { DEFAULT: '#3D2B1F', light: '#6B5744', lighter: '#8B7355' },
+                        stylus:     { DEFAULT: '#B8860B', light: '#D4A017', dark: '#8B6914' },
+                        grain:      { DEFAULT: '#C4A882', light: '#DCC8A0', dark: '#A08860' },
+                        wood:       { DEFAULT: '#5C3D2E', light: '#7A5A48', dark: '#3E2518' },
+                        palmgreen:  { DEFAULT: '#2D5016', light: '#3A6A1E', bg: '#E8F0E0' },
+                        terracotta: { DEFAULT: '#C04000', light: '#D45A20', bg: '#FDEAE0' },
+                    },
+                    fontFamily: {
+                        'tamil-serif': ['"Noto Serif Tamil"', 'Latha', 'Vijaya', 'serif'],
+                        'tamil':       ['"Noto Sans Tamil"', 'Latha', 'Vijaya', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+Tamil:wght@400;600;700&family=Noto+Sans+Tamil:wght@400;500;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" rel="stylesheet">
+    <style>
+        body { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; }
+        .tamil { font-family: 'Noto Sans Tamil', 'Latha', 'Vijaya', sans-serif; }
+        .tamil-serif { font-family: 'Noto Serif Tamil', 'Latha', 'Vijaya', serif; }
+
+        /* Card style */
+        .leaf-card {
+            background: linear-gradient(135deg, #FDF6E3 0%, #F5E6C8 100%);
+            border: 1px solid #C4A882;
+            border-radius: 0.5rem;
+        }
+        .leaf-card:hover { border-color: #A08860; }
+
+        /* Etched text — accepted sentences look permanently inscribed */
+        .etched {
+            font-weight: 600;
+            color: #3D2B1F;
+            border-left: 3px solid #2D5016;
+            padding-left: 0.75rem;
+        }
+
+        /* Grain divider */
+        .grain-divider {
+            border-top: 1px solid #C4A882;
+            position: relative;
+        }
+        .grain-divider::after {
+            content: '';
+            position: absolute;
+            top: 2px;
+            left: 0;
+            right: 0;
+            border-top: 1px solid #DCC8A0;
+        }
+
+        /* Binding dot */
+        .binding-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            border: 2px solid #C4A882;
+            background: #FDF6E3;
+        }
+
+        /* Nav active link */
+        .nav-active { background: rgba(184,134,11,0.25); }
+
+        /* Nav dropdowns — open on hover */
+        .nav-dropdown:hover .nav-dropdown-menu { display: block; }
+        .nav-dropdown-menu { min-width: 10rem; }
+
+        /* Scrollbar styling */
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #F5E6C8; }
+        ::-webkit-scrollbar-thumb { background: #C4A882; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #A08860; }
+    </style>
+</head>
+<body class="bg-leaf-100 min-h-screen text-etch">
+    {% load static %}
+    <!-- Navigation -->
+    <nav class="bg-wood shadow-lg">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-14">
+                <!-- Logo -->
+                <a href="{% if user.is_authenticated %}{% url 'dashboard' %}{% else %}{% url 'about' %}{% endif %}" class="flex items-center space-x-2 shrink-0">
+                    <img src="{% static 'img/logo.png' %}" alt="Tamil Nadai" class="h-8 w-8 rounded">
+                    <span class="text-lg font-bold tamil-serif text-stylus-light tracking-wide">தமிழ் நடை</span>
+                </a>
+
+                <!-- Desktop nav -->
+                {% if user.is_authenticated %}
+                <div class="hidden lg:flex items-center space-x-1">
+                    <!-- Rules (standalone) -->
+                    <a href="{% url 'rule_list' %}" class="px-2.5 py-1.5 rounded-md text-sm text-leaf-200 {% if 'rule' in request.resolver_match.url_name %}nav-active text-stylus-light{% else %}hover:bg-wood-light hover:text-leaf-100{% endif %}">Rules</a>
+
+                    <!-- Review dropdown -->
+                    <div class="nav-dropdown relative">
+                        <button class="px-2.5 py-1.5 rounded-md text-sm text-leaf-200 flex items-center gap-0.5 {% if request.resolver_match.url_name == 'review_queue' or request.resolver_match.url_name == 'review_log' %}nav-active text-stylus-light{% else %}hover:bg-wood-light hover:text-leaf-100{% endif %}">
+                            Review
+                            <span class="material-symbols-outlined" style="font-size:16px">expand_more</span>
+                        </button>
+                        <div class="nav-dropdown-menu hidden absolute top-full left-0 mt-1 w-40 bg-wood-dark rounded-md shadow-lg border border-wood-light py-1 z-50">
+                            <a href="{% url 'review_queue' %}" class="block px-3 py-2 text-sm text-leaf-200 hover:bg-wood-light hover:text-leaf-100">Review Queue</a>
+                            <a href="{% url 'review_log' %}" class="block px-3 py-2 text-sm text-leaf-200 hover:bg-wood-light hover:text-leaf-100">Review Log</a>
+                        </div>
+                    </div>
+
+                    <!-- Analysis dropdown -->
+                    <div class="nav-dropdown relative">
+                        <button class="px-2.5 py-1.5 rounded-md text-sm text-leaf-200 flex items-center gap-0.5 {% if 'export' in request.resolver_match.url_name or 'eval' in request.resolver_match.url_name %}nav-active text-stylus-light{% else %}hover:bg-wood-light hover:text-leaf-100{% endif %}">
+                            Analysis
+                            <span class="material-symbols-outlined" style="font-size:16px">expand_more</span>
+                        </button>
+                        <div class="nav-dropdown-menu hidden absolute top-full left-0 mt-1 w-40 bg-wood-dark rounded-md shadow-lg border border-wood-light py-1 z-50">
+                            {% if is_admin %}
+                            <a href="{% url 'evaluate' %}" class="block px-3 py-2 text-sm text-leaf-200 hover:bg-wood-light hover:text-leaf-100">Evaluate</a>
+                            {% endif %}
+                            <a href="{% url 'exports' %}" class="block px-3 py-2 text-sm text-leaf-200 hover:bg-wood-light hover:text-leaf-100">Exports</a>
+                        </div>
+                    </div>
+
+                    <!-- Team dropdown -->
+                    <div class="nav-dropdown relative">
+                        <button class="px-2.5 py-1.5 rounded-md text-sm text-leaf-200 flex items-center gap-0.5 {% if request.resolver_match.url_name == 'members_list' or request.resolver_match.url_name == 'invite' %}nav-active text-stylus-light{% else %}hover:bg-wood-light hover:text-leaf-100{% endif %}">
+                            Team
+                            <span class="material-symbols-outlined" style="font-size:16px">expand_more</span>
+                        </button>
+                        <div class="nav-dropdown-menu hidden absolute top-full left-0 mt-1 w-40 bg-wood-dark rounded-md shadow-lg border border-wood-light py-1 z-50">
+                            {% if is_admin %}
+                            <a href="{% url 'members_list' %}" class="block px-3 py-2 text-sm text-leaf-200 hover:bg-wood-light hover:text-leaf-100">Members</a>
+                            {% endif %}
+                            <a href="{% url 'invite' %}" class="block px-3 py-2 text-sm text-leaf-200 hover:bg-wood-light hover:text-leaf-100">Invite</a>
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
+
+                <!-- Right side: user info (desktop) + hamburger (mobile) -->
+                <div class="flex items-center gap-3">
+                    {% if user.is_authenticated %}
+                    <div class="hidden lg:flex items-center gap-3">
+                        <a href="{% url 'profile' %}" class="flex items-center gap-2 hover:opacity-80 transition-opacity">
+                            {% if user_avatar %}
+                            <img src="{{ user_avatar }}" alt="" class="w-7 h-7 rounded-full object-cover border border-grain-dark">
+                            {% else %}
+                            <div class="w-7 h-7 rounded-full bg-grain-dark flex items-center justify-center">
+                                <span class="text-xs font-bold text-leaf-100">{{ user.username|make_list|first|upper }}</span>
+                            </div>
+                            {% endif %}
+                            <span class="text-sm text-leaf-300">{{ user.get_full_name|default:user.username }}</span>
+                        </a>
+                        {% if user_role %}
+                        <span class="text-xs px-2 py-0.5 rounded
+                            {% if user_role == 'admin' %}bg-stylus-dark text-stylus-light
+                            {% elif user_role == 'reviewer' %}bg-palmgreen text-leaf-50
+                            {% else %}bg-grain-dark text-leaf-100{% endif %}">
+                            {{ user_role|title }}
+                        </span>
+                        {% endif %}
+                        <a href="{% url 'logout' %}" class="text-sm text-grain hover:text-leaf-100">Sign out</a>
+                    </div>
+                    <!-- Hamburger -->
+                    <button id="nav-toggle" class="lg:hidden p-1.5 rounded-md text-leaf-200 hover:bg-wood-light hover:text-leaf-100" aria-label="Menu">
+                        <span class="material-symbols-outlined" style="font-size:24px" id="nav-icon">menu</span>
+                    </button>
+                    {% else %}
+                    <a href="{% url 'login' %}" class="text-sm font-medium text-leaf-200 hover:text-leaf-100">Sign in</a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Mobile menu -->
+        {% if user.is_authenticated %}
+        <div id="mobile-menu" class="hidden lg:hidden border-t border-wood-light">
+            <div class="max-w-7xl mx-auto px-4 py-3 space-y-1">
+                <a href="{% url 'rule_list' %}" class="block px-3 py-2 rounded-md text-sm text-leaf-200 {% if 'rule' in request.resolver_match.url_name %}nav-active text-stylus-light{% else %}hover:bg-wood-light{% endif %}">Rules</a>
+                <div class="border-t border-wood-light my-2"></div>
+                <p class="px-3 pt-1 text-xs text-grain-dark uppercase tracking-wider">Review</p>
+                <a href="{% url 'review_queue' %}" class="block px-3 py-2 rounded-md text-sm text-leaf-200 {% if request.resolver_match.url_name == 'review_queue' %}nav-active text-stylus-light{% else %}hover:bg-wood-light{% endif %}">Review Queue</a>
+                <a href="{% url 'review_log' %}" class="block px-3 py-2 rounded-md text-sm text-leaf-200 {% if request.resolver_match.url_name == 'review_log' %}nav-active text-stylus-light{% else %}hover:bg-wood-light{% endif %}">Review Log</a>
+                <div class="border-t border-wood-light my-2"></div>
+                <p class="px-3 pt-1 text-xs text-grain-dark uppercase tracking-wider">Analysis</p>
+                {% if is_admin %}
+                <a href="{% url 'evaluate' %}" class="block px-3 py-2 rounded-md text-sm text-leaf-200 {% if 'eval' in request.resolver_match.url_name %}nav-active text-stylus-light{% else %}hover:bg-wood-light{% endif %}">Evaluate</a>
+                {% endif %}
+                <a href="{% url 'exports' %}" class="block px-3 py-2 rounded-md text-sm text-leaf-200 {% if 'export' in request.resolver_match.url_name %}nav-active text-stylus-light{% else %}hover:bg-wood-light{% endif %}">Exports</a>
+                <div class="border-t border-wood-light my-2"></div>
+                <p class="px-3 pt-1 text-xs text-grain-dark uppercase tracking-wider">Team</p>
+                {% if is_admin %}
+                <a href="{% url 'members_list' %}" class="block px-3 py-2 rounded-md text-sm text-leaf-200 {% if request.resolver_match.url_name == 'members_list' %}nav-active text-stylus-light{% else %}hover:bg-wood-light{% endif %}">Members</a>
+                {% endif %}
+                <a href="{% url 'invite' %}" class="block px-3 py-2 rounded-md text-sm text-leaf-200 {% if request.resolver_match.url_name == 'invite' %}nav-active text-stylus-light{% else %}hover:bg-wood-light{% endif %}">Invite</a>
+                <div class="border-t border-wood-light my-2"></div>
+                <div class="flex items-center gap-2 px-3 py-2">
+                    {% if user_avatar %}
+                    <img src="{{ user_avatar }}" alt="" class="w-6 h-6 rounded-full object-cover border border-grain-dark">
+                    {% else %}
+                    <div class="w-6 h-6 rounded-full bg-grain-dark flex items-center justify-center">
+                        <span class="text-xs font-bold text-leaf-100">{{ user.username|make_list|first|upper }}</span>
+                    </div>
+                    {% endif %}
+                    <span class="text-sm text-leaf-300">{{ user.get_full_name|default:user.username }}</span>
+                    {% if user_role %}
+                    <span class="text-xs px-1.5 py-0.5 rounded
+                        {% if user_role == 'admin' %}bg-stylus-dark text-stylus-light
+                        {% elif user_role == 'reviewer' %}bg-palmgreen text-leaf-50
+                        {% else %}bg-grain-dark text-leaf-100{% endif %}">
+                        {{ user_role|title }}
+                    </span>
+                    {% endif %}
+                </div>
+                <a href="{% url 'profile' %}" class="block px-3 py-2 rounded-md text-sm text-leaf-200 hover:bg-wood-light">Profile</a>
+                <a href="{% url 'logout' %}" class="block px-3 py-2 rounded-md text-sm text-grain hover:bg-wood-light hover:text-leaf-100">Sign out</a>
+            </div>
+        </div>
+        {% endif %}
+    </nav>
+
+    <script>
+    (function() {
+        var btn = document.getElementById('nav-toggle');
+        var menu = document.getElementById('mobile-menu');
+        var icon = document.getElementById('nav-icon');
+        if (btn && menu) {
+            btn.addEventListener('click', function() {
+                var open = !menu.classList.contains('hidden');
+                menu.classList.toggle('hidden');
+                icon.textContent = open ? 'menu' : 'close';
+            });
+        }
+    })();
+    </script>
+
+    <!-- Messages -->
+    {% if messages %}
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-4">
+        {% for message in messages %}
+        <div class="mb-2 p-3 rounded-md text-sm border
+            {% if message.tags == 'error' %}bg-terracotta-bg border-terracotta text-terracotta
+            {% elif message.tags == 'warning' %}bg-leaf-200 border-stylus text-etch-light
+            {% else %}bg-palmgreen-bg border-palmgreen text-palmgreen{% endif %}">
+            {{ message }}
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    <!-- Content -->
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+        {% block content %}{% endblock %}
+    </main>
+
+    <!-- Footer -->
+    <footer class="mt-12">
+        <div class="grain-divider"></div>
+        <div class="py-6 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex flex-col sm:flex-row items-center justify-between gap-3">
+                <div class="text-center sm:text-left">
+                    <p class="text-sm text-etch-lighter">&copy; 2026 Tamil Nadai</p>
+                    <p class="text-xs text-grain mt-1 tamil">Source: தமிழ் நடைக் கையேடு — தமிழ் இணையக் கல்விக் கழகம்</p>
+                </div>
+                <div class="flex flex-wrap items-center gap-3 text-xs text-etch-lighter">
+                    <a href="{% url 'about' %}" class="hover:text-etch transition-colors">About</a>
+                    <span class="text-grain-light">|</span>
+                    <a href="{% url 'privacy' %}" class="hover:text-etch transition-colors">Privacy</a>
+                    <span class="text-grain-light">|</span>
+                    <a href="{% url 'terms' %}" class="hover:text-etch transition-colors">Terms</a>
+                    <span class="text-grain-light">|</span>
+                    <a href="{% url 'cookies' %}" class="hover:text-etch transition-colors">Cookies</a>
+                    <span class="text-grain-light">|</span>
+                    <a href="mailto:tamiliam@gmail.com" class="hover:text-etch transition-colors">Contact</a>
+                    <span class="text-grain-light">|</span>
+                    <a href="https://ko-fi.com/elanjelian" target="_blank" rel="noopener" class="hover:text-etch transition-colors">Support this project</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+</body>
+</html>

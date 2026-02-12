@@ -1,0 +1,11 @@
+__pycache__
+*.pyc
+*.pyo
+db.sqlite3
+.env
+.env.*
+*.egg-info
+.git
+staticfiles/
+tmp_*.sql
+deploy.sh

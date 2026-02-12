@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+{% block title %}{% if editing %}Edit {{ rule.rule_id }}{% else %}Add Rule{% endif %}{% endblock %}
+{% block content %}
+
+<!-- Breadcrumb -->
+<nav class="text-sm text-etch-lighter mb-4">
+    <a href="{% url 'rule_list' %}" class="hover:text-stylus">Rules</a> &rsaquo;
+    <span class="text-etch">{% if editing %}Edit {{ rule.rule_id }}{% else %}Add Rule{% endif %}</span>
+</nav>
+
+<div class="leaf-card p-6 max-w-2xl">
+    <h1 class="text-xl font-bold text-etch mb-6">
+        {% if editing %}Edit Rule: <span class="text-stylus font-mono">{{ rule.rule_id }}</span>{% else %}Add New Rule{% endif %}
+    </h1>
+
+    <form method="post" class="space-y-4">
+        {% csrf_token %}
+
+        {% for field in form %}
+        <div>
+            <label for="{{ field.id_for_label }}" class="block text-sm font-medium text-etch-light mb-1">
+                {{ field.label }}
+                {% if field.field.required %}<span class="text-terracotta">*</span>{% endif %}
+            </label>
+            {{ field }}
+            {% if field.errors %}
+            <p class="text-terracotta text-xs mt-1">{{ field.errors.0 }}</p>
+            {% endif %}
+        </div>
+        {% endfor %}
+
+        <div class="flex gap-3 pt-4 border-t border-grain-light">
+            <button type="submit" class="bg-wood text-stylus-light px-6 py-2 rounded hover:bg-wood-dark transition-colors">
+                {% if editing %}Save Changes{% else %}Create Rule{% endif %}
+            </button>
+            <a href="{% if editing %}{% url 'rule_detail' rule.rule_id %}{% else %}{% url 'rule_list' %}{% endif %}"
+               class="px-6 py-2 border border-grain rounded text-etch-light hover:bg-leaf-200">Cancel</a>
+        </div>
+    </form>
+</div>
+{% endblock %}
