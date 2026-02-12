@@ -1,9 +1,9 @@
 """
-merge_dataset.py — Step 5: Merge all 3 tiers into a single dataset.
+merge_dataset.py — Merge all tiers into a single dataset.
 
-Combines Tier 1 (grammar.xml), Tier 2 (book rules), and Tier 3 (correct)
-into tamilnadai_v1.jsonl. Deduplicates, adds split field (80% test / 20% val),
-and prints statistics.
+Combines Tier 1 (grammar.xml), Tier 2 (book rules), Tier 2 gaps (primary book),
+and Tier 3 (correct) into tamilnadai_v1.jsonl. Deduplicates, adds split field
+(80% test / 20% val), and prints statistics.
 
 Usage:
     python Tamil_Nadai/tools/merge_dataset.py
@@ -35,6 +35,7 @@ def main():
 
     tier1_path = dataset_dir / "tier1_grammar_xml.jsonl"
     tier2_path = dataset_dir / "tier2_book_rules.jsonl"
+    tier2_gaps_path = dataset_dir / "tier2_primary_gaps.jsonl"
     tier3_path = dataset_dir / "tier3_correct.jsonl"
     output_path = dataset_dir / "tamilnadai_v1.jsonl"
 
@@ -42,7 +43,7 @@ def main():
     all_records = []
     tier_counts = {}
 
-    for label, path in [("tier1", tier1_path), ("tier2", tier2_path), ("tier3", tier3_path)]:
+    for label, path in [("tier1", tier1_path), ("tier2", tier2_path), ("tier2_gaps", tier2_gaps_path), ("tier3", tier3_path)]:
         if not path.exists():
             print(f"WARNING: {path} not found, skipping.")
             continue

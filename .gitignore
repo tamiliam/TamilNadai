@@ -11,5 +11,12 @@ Thumbs.db
 .vscode/
 .idea/
 
-# Large binary files (keep PDF out of git)
+# Large binary files
 *.pdf
+*.xlsx
+
+# Build artifacts
+.tmp/
+
+# Deprecated
+workbench/
