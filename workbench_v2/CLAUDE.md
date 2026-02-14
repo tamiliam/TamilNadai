@@ -4,57 +4,14 @@ Tamil grammar workbench for university collaboration. Django 5 + Tailwind CDN on
 
 ---
 
-## Lessons Learned (Applied from Thulivellam Retrospective)
+## Project-Specific Rules
 
-These are documented failures from a sibling project. Read them. Follow them. Do not repeat them.
+1. **Migration pattern**: SQL applied via Supabase MCP, then state-only Django migration. Never run `manage.py migrate` against Supabase in production.
+2. **Test command**: `cd Tamil_Nadai/workbench_v2 && python manage.py test core`
+3. **Deploy limit learned the hard way**: 7 deploys in one session for workbench v1. Follow the max-2-deploys rule in workspace `CLAUDE.md`.
 
-### 1. Test before you deploy — not the other way around
+General rules (testing, deployment discipline, Stitch prototyping, git, cleanup) are in the workspace-level `CLAUDE.md`.
 
-The workbench went through **7 Cloud Run deploys in a single session** (revisions 00015–00021). Several were fixing issues from the previous deploy: the comment box width took 3 iterations, the AI feature was completely redesigned after the first deploy. Each deploy takes 5+ minutes and costs real build minutes.
-
-**Rule:** Run the app locally and verify changes before deploying. Use `python manage.py runserver` with the local SQLite database. Only deploy when you have tested the feature locally and are confident it works.
-
-```bash
-cd Tamil_Nadai/workbench_v2
-python manage.py runserver
-# Visit http://localhost:8000 and verify
-```
-
-**Rule:** Never deploy more than twice per feature. If you're on your third deploy for the same change, stop and rethink your approach.
-
-### 2. Write tests alongside each feature
-
-The test file (`core/tests.py`) is empty. The app has 204 rules, 334 sentences, a 3-role membership system, AI integration, and invitation workflows — all with zero test coverage. Thulivellam created 108 tests *before* shipping donor-facing features, and that safety net caught regressions throughout the sprint.
-
-**Rule:** Every new view or model change must include at least one test. Before starting a new feature, write a test for the existing behaviour you're about to touch. After implementing, add tests for the new behaviour. Run tests before deploying:
-
-```bash
-python manage.py test core
-```
-
-**Minimum test coverage targets:**
-- Every URL pattern resolves correctly
-- Every view returns 200 for authorised users
-- Permission decorators deny access to the wrong roles
-- The review workflow (pending → review_1_done → accepted/rejected) works end-to-end
-- AI suggestion endpoint returns valid JSON
-
-### 3. Prototype UX in Stitch before coding templates
-
-We have Stitch access and used it for HalaTuju (22 screens). For the workbench, templates were coded directly, resulting in multiple UI iteration cycles. The comment box layout was rewritten 3 times. The AI generation UI was built, thrown away, and rebuilt.
-
-**Rule:** For any non-trivial UI change (new page, layout redesign, new component), create a Stitch screen first. Get visual approval. Then code to match the prototype. This is faster than deploy-test-fix-deploy.
-
-### 4. Document as you go
-
-The workbench has zero documentation — no README, no architecture doc, no deployment guide, no known issues. If a different developer (or agent) picks this up tomorrow, they have to reverse-engineer everything from the code.
-
-**Rule:** Maintain these docs alongside code changes:
-- `docs/architecture.md` — system overview, tech stack, data flow
-- `docs/deployment.md` — how to deploy, env vars, common issues
-- `docs/known-issues.md` — things that need fixing but aren't urgent
-
----
 
 ## Architecture
 
@@ -126,23 +83,11 @@ gcloud run deploy tamilnadai \
 
 Env vars are already set on the service. Only use `--set-env-vars` when you need to change them.
 
-### Cloud Run Gotchas (from Thulivellam)
-
-1. **SSL redirect:** `SECURE_SSL_REDIRECT` works here because `SECURE_PROXY_SSL_HEADER` is set. Without the proxy header, you get infinite redirect loops.
-2. **Supabase connection:** Use Session Pooler URI (IPv4). Direct connection is IPv6 and fails on Cloud Run.
-3. **CSRF:** `.run.app` must be in `CSRF_TRUSTED_ORIGINS`. Settings handle this automatically when `DATABASE_URL` is present.
-4. **Static files:** `collectstatic` runs at Docker build time (in Dockerfile). WhiteNoise serves them.
+Cloud Run deployment gotchas (SSL, Supabase IPv4, CSRF) are documented in the workspace-level `CLAUDE.md`.
 
 ---
 
 ## Working with This Codebase
-
-### Before Any Change
-
-1. Read this document
-2. Check if the change touches templates → prototype in Stitch first
-3. Check if the change touches views/models → write a test first
-4. Run the app locally and verify before deploying
 
 ### Database Changes
 
@@ -164,15 +109,6 @@ The design system uses a palm-leaf manuscript metaphor:
 
 Tamil text uses `tamil` (sans) or `tamil-serif` CSS classes.
 
-### Secrets
-
-Secrets live **only** in Cloud Run environment variables. Never in files, never in code, never in `.env`. To update:
-
-```bash
-gcloud run services update tamilnadai --region asia-southeast1 \
-  --update-env-vars "KEY=value"
-```
-
 ---
 
 ## Known Issues
@@ -187,3 +123,4 @@ gcloud run services update tamilnadai --region asia-southeast1 \
 - ~~Stale SQL batch files~~ — Deleted (tmp_rules_batch_*.sql, tmp_sentences_batch_*.sql).
 - ~~Unused `generate_sentences()` function~~ — Deleted from services.py.
 - ~~DEBUG defaulting to True~~ — Changed to False.
+
