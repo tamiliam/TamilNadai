@@ -83,7 +83,11 @@ gcloud run deploy tamilnadai \
 
 Env vars are already set on the service. Only use `--set-env-vars` when you need to change them.
 
-Cloud Run deployment gotchas (SSL, Supabase IPv4, CSRF) are documented in the workspace-level `CLAUDE.md`.
+### Django + Cloud Run Gotchas
+- `SECURE_SSL_REDIRECT = False` — Cloud Run terminates SSL
+- `SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")`
+- Supabase: Use **Session Pooler** URI (IPv4), not Direct connection
+- Custom domains: Set `CUSTOM_DOMAIN` env var → add to both `ALLOWED_HOSTS` and `CSRF_TRUSTED_ORIGINS`
 
 ---
 
